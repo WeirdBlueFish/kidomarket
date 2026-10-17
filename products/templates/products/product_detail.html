@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }} - فروشگاه لباس کودک</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        .detail-container { 
+            background: white; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+        }
+        .product-image { max-width: 400px; border-radius: 8px; }
+        .info { flex: 1; }
+        h1 { color: #333; margin-top: 0; }
+        .price { color: #27ae60; font-size: 1.5em; font-weight: bold; }
+        .badge { background-color: #e74c3c; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.9em; }
+        .description { line-height: 1.6; color: #555; margin-top: 20px; }
+        .back-btn { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #3498db; }
+    </style>
+</head>
+<body>
+
+    <a href="{% url 'product_list' %}" class="back-btn">← بازگشت به لیست محصولات</a>
+
+    <div class="detail-container">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        {% else %}
+            <div class="product-image" style="background: #eee; display:flex; align-items:center; justify-content:center;">بدون تصویر</div>
+        {% endif %}
+        
+        <div class="info">
+            <h1>{{ product.name }}</h1>
+            <p>
+                <span class="badge">{{ product.get_gender_display }}</span>
+                <span class="badge" style="background-color: #f39c12;">رده سنی: {{ product.min_age }} تا {{ product.max_age }} سال</span>
+            </p>
+            <p class="price">{{ product.price }} تومان</p>
+            <p style="color: {% if product.stock > 0 %}green{% else %}red{% endif %};">
+                {% if product.stock > 0 %}موجودی: {{ product.stock }} عدد{% else %}ناموجود{% endif %}
+            </p>
+            
+            <div class="description">
+                <h3>توضیحات لباس:</h3>
+                <!-- linebreaks به جنگو می‌گوید فاصله‌های اینتر متن را در HTML حفظ کند -->
+                <p>{{ product.description|linebreaks }}</p> 
+            </div>
+            
+            {% if product.stock > 0 %}
+                <button style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; margin-top: 15px;">افزودن به سبد خرید</button>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
