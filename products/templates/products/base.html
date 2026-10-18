@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>فروشگاه لباس کودک</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
+        /* استایل هدر سایت */
+        .header { background-color: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header a { color: white; text-decoration: none; font-weight: bold; }
+        .header-logo { font-size: 1.3em; }
+        .cart-badge { background-color: #e74c3c; padding: 2px 8px; border-radius: 12px; font-size: 0.9em; margin-right: 5px; }
+        
+        .container { padding: 20px; }
+    </style>
+    <!-- ما می‌توانیم استایل‌های صفحات دیگر را در اینجا (block css) قرار دهیم -->
+    {% block css %}{% endblock %}
+</head>
+<body>
+
+    <!-- هدر سایت که در همه جا تکرار می‌شود -->
+    <div class="header">
+        <a href="{% url 'product_list' %}" class="header-logo">🧸 فروشگاه کودک من</a>
+        
+        <a href="{% url 'cart_detail' %}">
+            سبد خرید 🛒
+            <!-- اگر سبد خالی نبود، دایره قرمز رنگ تعداد را نشان بده -->
+            {% if cart|length > 0 %}
+                <span class="cart-badge">{{ cart|length }}</span>
+            {% endif %}
+        </a>
+    </div>
+
+    <!-- محتوای متغیر هر صفحه اینجا جایگذاری می‌شود -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>
