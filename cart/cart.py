@@ -27,6 +27,11 @@ class Cart:
             del self.cart[product_id]
             self.session.modified = True
 
+    def clear(self):
+        """پاک کردن کل سبد خرید از حافظه"""
+        del self.session['cart']
+        self.session.modified = True
+
 
     def __iter__(self):
         """گرفتن اطلاعات کامل لباس‌ها از دیتابیس برای نمایش در صفحه"""

@@ -62,7 +62,7 @@
 
     {% if cart|length > 0 %}
         <p class="total">مبلغ قابل پرداخت: {{ cart.get_total_price }} تومان</p>
-        <a href="#" class="btn-checkout">تایید و ثبت سفارش ←</a>
+        <a href="{% url 'order_create' %}" class="btn-checkout">تایید و ثبت سفارش ←</a>
     {% endif %}
     
     <div style="clear: both;"></div>

@@ -1,0 +1,17 @@
+{% extends "products/base.html" %}
+
+{% block content %}
+<div style="background: white; max-width: 600px; margin: 0 auto; padding: 40px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    {% if success %}
+        <h1 style="color: #2ecc71; font-size: 4em; margin: 0;">✔</h1>
+        <h2>پرداخت با موفقیت انجام شد!</h2>
+        <p>سفارش شما تایید شد و به زودی ارسال می‌گردد.</p>
+    {% else %}
+        <h1 style="color: #e74c3c; font-size: 4em; margin: 0;">✖</h1>
+        <h2>پرداخت ناموفق بود!</h2>
+        <p>تراکنش لغو شد. سفارش شما در سیستم ثبت شده اما نیازمند پرداخت است.</p>
+    {% endif %}
+    <br>
+    <a href="{% url 'product_list' %}" style="display: inline-block; background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;">بازگشت به فروشگاه</a>
+</div>
+{% endblock %}

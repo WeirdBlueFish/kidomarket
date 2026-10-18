@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>درگاه پرداخت</title>
+    <style>
+        body { font-family: Tahoma; background-color: #f1f2f6; display: flex; justify-content: center; padding-top: 100px; }
+        .bank-card { background: white; padding: 30px; border-radius: 10px; border-top: 5px solid #2980b9; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; color: white; width: 45%; margin: 5px; }
+        .btn-pay { background-color: #27ae60; }
+        .btn-cancel { background-color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="bank-card">
+        <h2>درگاه پرداخت شبیه‌سازی‌شده بانک</h2>
+        <p>فروشگاه لباس کودک 🧸</p>
+        <p style="font-size: 1.2em;">مبلغ پرداختی: <strong>{{ total_price }} تومان</strong></p>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="pay" class="btn btn-pay">پرداخت موفق</button>
+            <button type="submit" name="cancel" class="btn btn-cancel">انصراف</button>
+        </form>
+    </div>
+</body>
+</html>
