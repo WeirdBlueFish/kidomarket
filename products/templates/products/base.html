@@ -30,6 +30,26 @@
             {% endif %}
         </a>
     </div>
+    <div style="float: left; padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-size: 0.9em;">
+        <!-- بررسی می‌کنیم که آیا کاربر وارد حساب شده است یا نه -->
+        {% if user.is_authenticated %}
+            <!-- این خط را جایگزین خط قبلی کنید -->
+            <a href="{% url 'profile' %}" style="color: #2980b9; font-weight: bold; margin-left: 15px; text-decoration: none;">
+                👤 پروفایل من ({{ user.username }})
+            </a>
+            <a href="{% url 'logout' %}" style="color: #e74c3c; text-decoration: none; font-weight: bold;">
+                خروج از حساب 🚪
+            </a>
+        {% else %}
+            <!-- اگر کاربر مهمان بود، دکمه‌های ورود و ثبت‌نام را نشان می‌دهیم -->
+            <a href="{% url 'login' %}" style="color: #2ecc71; text-decoration: none; font-weight: bold; margin-left: 15px;">
+                ورود به حساب 🔓
+            </a>
+            <a href="{% url 'register' %}" style="color: #3498db; text-decoration: none; font-weight: bold;">
+                ثبت‌نام کاربر جدید 📝
+            </a>
+        {% endif %}
+    </div>
 
     <!-- محتوای متغیر هر صفحه اینجا جایگذاری می‌شود -->
     <div class="container">

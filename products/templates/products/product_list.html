@@ -19,11 +19,48 @@
 {% block content %}
     <h1>محصولات فروشگاه ما</h1>
 
-    <div class="filters">
-        <a href="{% url 'product_list' %}" class="filter-btn {% if not current_gender %}active{% endif %}">همه لباس‌ها</a>
-        <a href="{% url 'product_list' %}?gender=boy" class="filter-btn {% if current_gender == 'boy' %}active{% endif %}">پسرونه 👦</a>
-        <a href="{% url 'product_list' %}?gender=girl" class="filter-btn {% if current_gender == 'girl' %}active{% endif %}">دخترونه 👧</a>
-        <a href="{% url 'product_list' %}?gender=unisex" class="filter-btn {% if current_gender == 'unisex' %}active{% endif %}">اسپرت 👕</a>
+    <!-- باکس فیلترهای پیشرفته -->
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 800px; margin: 20px auto; text-align: center;">
+        <form method="get" action="{% url 'product_list' %}" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <!-- این بخش را دقیقاً قبل از منوی انتخاب جنسیت قرار دهید -->
+            <div>
+                <label style="font-weight: bold; color: #34495e;">جستجو:</label>
+                <input type="text" name="q" value="{{ current_search|default_if_none:'' }}" placeholder="مثلاً: تیشرت..." style="padding: 8px 15px; border-radius: 5px; border: 1px solid #bdc3c7; outline: none; font-family: inherit; width: 150px;">
+            </div>
+            <!-- منوی انتخاب جنسیت -->
+            <div>
+                <label style="font-weight: bold; color: #34495e;">جنسیت:</label>
+                <select name="gender" style="padding: 8px 15px; border-radius: 5px; border: 1px solid #bdc3c7; outline: none; font-family: inherit;">
+                    <option value="">همه لباس‌ها 🌈</option>
+                    <option value="boy" {% if current_gender == 'boy' %}selected{% endif %}>پسرونه 👦🏻</option>
+                    <option value="girl" {% if current_gender == 'girl' %}selected{% endif %}>دخترونه 👧🏻</option>
+                    <option value="unisex" {% if current_gender == 'unisex' %}selected{% endif %}>اسپرت 👕</option>
+                </select>
+            </div>
+
+            <!-- منوی انتخاب سن -->
+            <div>
+                <label style="font-weight: bold; color: #34495e;">سن کودک:</label>
+                <select name="age" style="padding: 8px 15px; border-radius: 5px; border: 1px solid #bdc3c7; outline: none; font-family: inherit;">
+                    <option value="">همه سنین</option>
+                    <option value="1" {% if current_age == '1' %}selected{% endif %}>۱ سال</option>
+                    <option value="2" {% if current_age == '2' %}selected{% endif %}>۲ سال</option>
+                    <option value="3" {% if current_age == '3' %}selected{% endif %}>۳ سال</option>
+                    <option value="4" {% if current_age == '4' %}selected{% endif %}>۴ سال</option>
+                    <option value="5" {% if current_age == '5' %}selected{% endif %}>۵ سال</option>
+                    <option value="6" {% if current_age == '6' %}selected{% endif %}>۶ تا ۸ سال</option>
+                    <option value="10" {% if current_age == '10' %}selected{% endif %}>۹ تا ۱۲ سال</option>
+                    <option value="14" {% if current_age == '14' %}selected{% endif %}>۱۳ تا ۱۶ سال</option>
+                </select>
+            </div>
+
+            <!-- دکمه‌های اعمال و حذف فیلتر -->
+            <div>
+                <button type="submit" style="background: #2ecc71; color: white; padding: 9px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 بگرد</button>
+                <a href="{% url 'product_list' %}" style="color: #e74c3c; text-decoration: none; margin-right: 10px; font-size: 0.9em; font-weight: bold;">✖ حذف فیلترها</a>
+            </div>
+
+        </form>
     </div>
 
     <div class="product-container">

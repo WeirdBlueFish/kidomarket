@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from .models import OrderItem
+from .models import OrderItem, Order
 from .forms import OrderCreateForm
 from cart.cart import Cart
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 def order_create(request):
@@ -9,8 +11,13 @@ def order_create(request):
     if request.method == 'POST':
         form = OrderCreateForm(request.POST)
         if form.is_valid():
-            order = form.save()
+            order = form.save(commit=False)
 
+            if request.user.is_authenticated:
+                order.user = request.user
+
+            order.save()
+            
             for item in cart:
                 OrderItem.objects.create(
                     order=order,
@@ -32,3 +39,9 @@ def order_create(request):
 
 
     return render(request, 'orders/order_create.html', {'cart': cart, 'form': form})
+
+@login_required(login_url='login')
+def user_order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    return render(request, 'orders/order_detail.html', {'order': order})

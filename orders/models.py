@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from products.models import Products
 
 class Order(models.Model):
@@ -8,7 +9,8 @@ class Order(models.Model):
     address = models.TextField(verbose_name="آدرس دقیق")
     created = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
     paid = models.BooleanField(default=False, verbose_name="پرداخت شده")
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', null=True, blank=True, verbose_name='کاربر سایت')
+    
     class Meta:
         verbose_name = "سفارش"
         verbose_name_plural = "سفارشات"

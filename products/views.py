@@ -5,17 +5,31 @@ from .models import Products
 
 def product_list(request):
 
-    gender_filter = request.GET.get('gender')
-
     products = Products.objects.filter(is_active=True)
+
+    gender_filter = request.GET.get('gender')
+    age_filter = request.GET.get('age')
+    search_query = request.GET.get('q')
+
+    if search_query:
+        products = products.filter(name__icontains=search_query)
 
     if gender_filter:
         products = products.filter(gender=gender_filter)
 
+    if age_filter and age_filter.isdigit():
+        age = int(age_filter)
+        products= products.filter(min_age__lte=age, max_age__gte=age)
+
     return render(
         request, 
         'products/product_list.html', 
-        {'products': products, 'current_gender': gender_filter}
+        {
+            'products': products,
+            'current_gender': gender_filter, 
+            'current_age': age_filter,
+            'current_search': search_query
+            }
                   )
 
 
