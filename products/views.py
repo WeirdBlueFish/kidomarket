@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
 from .models import Products
 
 # Create your views here.
@@ -21,11 +22,17 @@ def product_list(request):
         age = int(age_filter)
         products= products.filter(min_age__lte=age, max_age__gte=age)
 
+    paginator = Paginator(products, 8)
+
+    page_number = request.GET.get('page')
+
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request, 
         'products/product_list.html', 
         {
-            'products': products,
+            'products': page_obj,
             'current_gender': gender_filter, 
             'current_age': age_filter,
             'current_search': search_query

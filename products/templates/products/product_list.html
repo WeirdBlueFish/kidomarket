@@ -81,4 +81,31 @@
             <p>در حال حاضر محصولی برای نمایش وجود ندارد.</p>
         {% endfor %}
     </div>
+    <!-- بخش دکمه‌های صفحه‌بندی -->
+        {% if products.has_other_pages %}
+        <div style="text-align: center; margin: 40px auto; padding: 20px; direction: rtl;">
+            
+            <!-- دکمه صفحه قبلی -->
+            {% if products.has_previous %}
+                <a href="?q={{ current_search|default_if_none:'' }}&gender={{ current_gender|default_if_none:'' }}&age={{ current_age|default_if_none:'' }}&page={{ products.previous_page_number }}" 
+                style="padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px; font-weight: bold;">
+                    « صفحه قبلی
+                </a>
+            {% endif %}
+
+            <!-- نمایش شماره صفحه فعلی -->
+            <span style="font-weight: bold; padding: 10px 20px; background: #ecf0f1; border-radius: 5px; margin: 0 5px; color: #2c3e50;">
+                صفحه {{ products.number }} از {{ products.paginator.num_pages }}
+            </span>
+
+            <!-- دکمه صفحه بعدی -->
+            {% if products.has_next %}
+                <a href="?q={{ current_search|default_if_none:'' }}&gender={{ current_gender|default_if_none:'' }}&age={{ current_age|default_if_none:'' }}&page={{ products.next_page_number }}" 
+                style="padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px; font-weight: bold;">
+                    صفحه بعدی »
+                </a>
+            {% endif %}
+            
+        </div>
+        {% endif %}
 {% endblock %}
