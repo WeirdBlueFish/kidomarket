@@ -48,3 +48,19 @@ class Category(models.Model):
         for child in self.subcategories.all():
             descendant_ids.extend(child.get_all_descendants())
         return descendant_ids
+
+class ProductSize(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='sizes', verbose_name='لباس')
+    name = models.CharField(max_length=50, verbose_name='نام سایز')
+
+    price = models.PositiveIntegerField(verbose_name='قیمت (تومان)', default=0)
+    stock = models.PositiveIntegerField(verbose_name='موجودی', default=0)
+
+    features = models.TextField(blank=True, null=True, verbose_name="ویژگی‌های ابعاد", help_text="هر ویژگی را در یک خط بنویسید. مثلاً: قد آستین: 40 سانتی‌متر")
+
+    class Meta:
+        verbose_name = 'سایز و ابعاد'
+        verbose_name_plural = 'سایزها و ابعاد'
+
+    def __str__(self):
+        return f"{self.name} - {self.product.name}"

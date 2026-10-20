@@ -12,17 +12,15 @@ def payment_process(request, order_id):
             order.save()
             
             # --- منطق کسر از انبار ---
-            # حالا که پرداخت تایید شد، لباس‌ها را از انبار کم می‌کنیم
             for item in order.items.all():
-                product_in_db = item.product
-                product_in_db.stock -= item.quantity
-                
-                # اگر موجودی صفر یا منفی شد، لباس ناموجود می‌شود
-                if product_in_db.stock <= 0:
-                    product_in_db.stock = 0
-                    product_in_db.is_active = False 
+                if item.product_size:
+                    size_in_db = item.product_size
+                    size_in_db.stock -= item.quantity
+
+                    if size_in_db.stock <= 0:
+                        size_in_db.stock = 0
+                    size_in_db.save()
                     
-                product_in_db.save()
             # -------------------------
 
             return render(request, 'payment/result.html', {'success':True, 'order': order})

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from products.models import Products
+from products.models import Products, ProductSize
 
 class Order(models.Model):
     first_name = models.CharField(max_length=50, verbose_name="نام")
@@ -23,6 +23,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Products, related_name='order_items', on_delete=models.CASCADE)
     price = models.PositiveIntegerField(verbose_name="قیمت")
     quantity = models.PositiveIntegerField(default=1, verbose_name="تعداد")
+    product_size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True, verbose_name="سایز انتخابی")
 
     def __str__(self):
         return str(self.id)

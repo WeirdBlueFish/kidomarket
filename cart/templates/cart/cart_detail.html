@@ -32,29 +32,43 @@
             </tr>
         </thead>
         <tbody>
+            <!-- داخل حلقه نمایش سبد خرید -->
             {% for item in cart %}
                 <tr>
+                    <!-- نمایش عکس (اختیاری) -->
                     <td>
                         {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" class="img-small">
-                        {% else %}
-                            <span style="color: gray; font-size: 0.8em;">بدون عکس</span>
+                            <img src="{{ item.product.image.url }}" style="width: 50px; border-radius: 5px;">
                         {% endif %}
                     </td>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.price }} تومان</td>
-                    <td>{{ item.total_price }} تومان</td>
+                    
+                    <!-- نمایش نام لباس + نام سایز -->
                     <td>
-                        <form action="{% url 'cart_remove' item.product.id %}" method="post">
+                        <strong>{{ item.product.name }}</strong>
+                        <br>
+                        <span style="color: #7f8c8d; font-size: 0.9em;">
+                            سایز انتخابی: {{ item.size.name }}
+                        </span>
+                    </td>
+                    
+                    <!-- نمایش قیمت همون سایز -->
+                    <td>{{ item.price }} تومان</td>
+                    
+                    <!-- نمایش تعداد -->
+                    <td>{{ item.quantity }}</td>
+                    
+                    <!-- قیمت کل این ردیف -->
+                    <td>{{ item.total_price }} تومان</td>
+                    
+                    <!-- دکمه حذف (ارسال آیدی سایز به جای لباس) -->
+                    <td>
+                        <form action="{% url 'cart_remove' item.size.id %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="btn-remove">حذف ❌</button>
+                            <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                                حذف ❌
+                            </button>
                         </form>
                     </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6" style="text-align: center; color: red; padding: 20px;">سبد خرید شما خالی است.</td>
                 </tr>
             {% endfor %}
         </tbody>
