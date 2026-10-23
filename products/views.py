@@ -45,11 +45,15 @@ def product_detail(request, pk):
 
     similar_products = Products.objects.filter(gender=product.gender, is_active=True).exclude(id=product.id)[:4]
 
-    comments = product.comments.filter(is_active=True)
+    comments_list = product.comments.filter(is_active=True)
 
-    avg_dict = comments.aggregate(Avg('rating'))
+    paginator = Paginator(comments_list, 10)
+    page_number = request.GET.get('page')
+    comments = paginator.get_page(page_number)
+    
+    avg_dict = comments_list.aggregate(Avg('rating'))
     avg_rating = round(avg_dict['rating__avg'], 1) if avg_dict['rating__avg'] else 0
-    comments_count = comments.count()
+    comments_count = comments_list.count()
 
     if request.method == 'POST':
         auto_name = request.user.get_full_name() or request.user.username

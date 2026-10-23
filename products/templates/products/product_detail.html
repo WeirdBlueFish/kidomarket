@@ -230,7 +230,23 @@
     {% empty %}
         <p style="color: #7f8c8d;">هنوز نظری برای این لباس ثبت نشده است. اولین نفر باشید!</p>
     {% endfor %}
+    <!-- دکمه‌های جابجایی بین صفحات -->
+    {% if comments.has_other_pages %}
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin: 25px 0;">
+        {% if comments.has_previous %}
+            <a href="?page={{ comments.previous_page_number }}" style="padding: 8px 16px; background: #3498db; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">صفحه قبلی</a>
+        {% endif %}
 
+        <span style="color: #7f8c8d; font-weight: bold;">
+            صفحه {{ comments.number }} از {{ comments.paginator.num_pages }}
+        </span>
+
+        {% if comments.has_next %}
+            <a href="?page={{ comments.next_page_number }}" style="padding: 8px 16px; background: #3498db; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">صفحه بعدی</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
     <!-- فرم ثبت نظر -->
     <h4 style="margin-top: 30px; color: #2c3e50;">ثبت نظر جدید</h4>
     
