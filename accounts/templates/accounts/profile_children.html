@@ -1,14 +1,20 @@
 {% extends "accounts/profile_base.html" %}
+{% load accounts_tags %}
 
 {% block profile_content %}
+    <!-- استایل و اسکریپت تقویم شمسی جدید (Jalali Datepicker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.js"></script>
+
     <h2 style="color: #2c3e50; border-bottom: 2px solid #f1f2f6; padding-bottom: 10px;">مشخصات فرزندان</h2>
     
+    <!-- بخش نمایش فرزندان ثبت شده -->
     <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
         {% for child in children %}
             <div style="background: #fdfefe; padding: 15px; border: 1px solid #ecf0f1; border-radius: 8px;">
                 <strong style="color: #2980b9; font-size: 1.1em;">{{ child.name }}</strong>
                 <p style="margin: 5px 0 0 0; color: #7f8c8d; font-size: 0.9em;">
-                    تولد: {{ child.birth_date }} | قد: {{ child.height|default:"-" }} سم | وزن: {{ child.weight|default:"-" }} ک‌گ | دور سینه: {{ child.chest|default:"-" }} سم
+                    تولد: {{ child.birth_date|to_jalali }} | قد: {{ child.height|default:"-" }} سم | وزن: {{ child.weight|default:"-" }} ک‌گ | دور سینه: {{ child.chest|default:"-" }} سم
                 </p>
             </div>
         {% empty %}
@@ -16,11 +22,17 @@
         {% endfor %}
     </div>
 
+    <!-- فرم ثبت فرزند جدید -->
     <h3 style="color: #2c3e50; border-bottom: 2px solid #f1f2f6; padding-bottom: 10px;">➕ ثبت فرزند جدید</h3>
     <form method="post" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
         {% csrf_token %}
         <input type="text" name="name" placeholder="نام فرزند" required style="padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
-        <input type="date" name="birth_date" required style="padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
+        
+        <!-- فیلد تاریخ (اضافه شدن ویژگی data-jdp برای فعال‌سازی خودکار تقویم) -->
+        <div style="display: flex; flex-direction: column;">
+            <label style="font-size: 0.85em; color: #7f8c8d; margin-bottom: 5px;">تاریخ تولد (شمسی):</label>
+            <input type="text" data-jdp name="birth_date" placeholder="برای انتخاب تاریخ کلیک کنید" required style="padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7; font-family: inherit; text-align: left; direction: ltr; cursor: pointer;">
+        </div>
         
         <div style="display: flex; gap: 15px;">
             <input type="number" name="height" placeholder="قد (سم)" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
@@ -29,4 +41,13 @@
         </div>
         <button type="submit" style="background: #3498db; color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 150px;">ثبت مشخصات</button>
     </form>
+
+    <!-- فعال‌سازی تقویم شمسی -->
+    <script>
+        // با این یک خط، هر فیلدی که data-jdp داشته باشد تبدیل به تقویم می‌شود
+        jalaliDatepicker.startWatch({
+            time: false,
+            separatorChar: "/"
+        });
+    </script>
 {% endblock %}
