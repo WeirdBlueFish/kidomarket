@@ -1,6 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from .models import Products, Category
+from .models import Products, Category, Comment
 
 # Create your views here.
 
@@ -45,9 +45,20 @@ def product_detail(request, pk):
 
     similar_products = Products.objects.filter(gender=product.gender, is_active=True).exclude(id=product.id)[:4]
 
+    comments = product.comments.filter(is_active=True)
+
+    if request.method == 'POST':
+        auto_name = request.user.get_full_name() or request.user.username
+        body = request.POST.get('body')
+        if body:
+            Comment.objects.create(product=product, name=auto_name, body=body)
+            # رفرش کردن صفحه برای جلوگیری از ارسال مجدد فرم
+            return redirect('product_detail', pk=product.id)
+        
     return render (request, 
                    'products/product_detail.html', 
                    {
                        'product': product,
-                       'similar_products': similar_products
+                       'similar_products': similar_products,
+                       'comments': comments
                     })

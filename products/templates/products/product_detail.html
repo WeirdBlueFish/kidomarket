@@ -198,6 +198,38 @@
     </div>
 </div>
 
+<div class="detail-container" style="flex-direction: column; gap: 20px; margin-top: 30px;">
+    <h3 style="color: #2c3e50; border-bottom: 2px solid #f1f2f6; padding-bottom: 15px; margin: 0;">نظرات کاربران</h3>
+    
+    <!-- نمایش نظرات تایید شده -->
+    {% for comment in comments %}
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-right: 4px solid #3498db; margin-bottom: 10px;">
+            <strong style="color: #2980b9;">{{ comment.name }}</strong>
+            <span style="color: #7f8c8d; font-size: 0.8em; margin-right: 10px;">{{ comment.get_jalali }}</span>
+            <p style="margin: 10px 0 0 0; color: #34495e;">{{ comment.body|linebreaks }}</p>
+        </div>
+    {% empty %}
+        <p style="color: #7f8c8d;">هنوز نظری برای این لباس ثبت نشده است. اولین نفر باشید!</p>
+    {% endfor %}
+
+<!-- فرم ثبت نظر -->
+    <h4 style="margin-top: 30px; color: #2c3e50;">ثبت نظر جدید</h4>
+    
+    {% if request.user.is_authenticated %}
+        <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+            {% csrf_token %}
+            <!-- فیلد نام کاملاً حذف شد -->
+            <textarea name="body" rows="4" placeholder="نظر خود را بنویسید..." required style="padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7; resize: vertical;"></textarea>
+            <button type="submit" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; align-self: flex-start;">ارسال نظر</button>
+        </form>
+        <p style="font-size: 0.85em; color: #95a5a6;">نظر شما پس از تایید با نام <strong>{{ request.user.username }}</strong> نمایش داده می‌شود.</p>
+    {% else %}
+        <div style="background: #fdf2e9; padding: 15px; border-radius: 8px; border: 1px solid #fae5d3; text-align: center;">
+            <p style="color: #d35400; font-weight: bold; margin: 0;">برای ثبت نظر باید وارد حساب کاربری خود شوید.</p>
+        </div>
+    {% endif %}
+        </div>
+
 <!-- بخش لباس‌های مشابه -->
 {% if similar_products %}
 <div class="detail-container" style="flex-direction: column; gap: 20px;">
@@ -221,6 +253,8 @@
     </div>
 </div>
 {% endif %}
+
+
 
 <!-- موتور جاوااسکریپت برای مدیریت سایزها -->
 <script>

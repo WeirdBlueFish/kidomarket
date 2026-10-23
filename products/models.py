@@ -1,4 +1,5 @@
 from django.db import models
+import jdatetime
 
 class Products(models.Model):
     GENDER_CHOICES = [
@@ -64,3 +65,24 @@ class ProductSize(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.product.name}"
+
+class Comment(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='comments', verbose_name="محصول")
+    name = models.CharField(max_length=50, verbose_name="نام شما")
+    body = models.TextField(verbose_name="متن نظر")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
+    is_active = models.BooleanField(default=False, verbose_name="تایید شده / نمایش داده شود؟")
+
+    class Meta:
+        ordering = ('-created',)
+        verbose_name = "نظر"
+        verbose_name_plural = "نظرات"
+
+    def __str__(self):
+        return f"نظر {self.name} روی {self.product.name}"
+
+    def get_jalali(self):
+            jalali_date = jdatetime.datetime.fromgregorian(datetime=self.created)
+            return jalali_date.strftime("%Y/%m/%d")
+    
+    get_jalali.short_description = "تاریخ ثبت (شمسی)"
