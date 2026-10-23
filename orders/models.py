@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from products.models import Products, ProductSize
+import jdatetime
 
 class Order(models.Model):
     first_name = models.CharField(max_length=50, verbose_name="نام")
@@ -17,6 +18,12 @@ class Order(models.Model):
 
     def __str__(self):
         return f"سفارش شماره {self.id}"
+
+    def get_jalali(self):
+        jalali_date = jdatetime.datetime.fromgregorian(datetime=self.created)
+        return jalali_date.strftime("%Y/%m/%d")
+
+    get_jalali.short_description = "تاریخ ثبت (شمسی)"
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)

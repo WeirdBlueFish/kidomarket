@@ -26,7 +26,7 @@
                         </a>
                     </td>
                     
-                    <td style="padding: 12px;">{{ order.created|date:"Y/m/d" }}</td>
+                    <td style="padding: 12px;">{{ order.get_jalali}}</td>
                     <td style="padding: 12px;">
                         {% if order.paid %}
                             <span style="color: #2ecc71; font-weight: bold;">✅ پرداخت شده</span>
