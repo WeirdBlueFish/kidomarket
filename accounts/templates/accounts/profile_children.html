@@ -1,0 +1,32 @@
+{% extends "accounts/profile_base.html" %}
+
+{% block profile_content %}
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #f1f2f6; padding-bottom: 10px;">مشخصات فرزندان</h2>
+    
+    <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+        {% for child in children %}
+            <div style="background: #fdfefe; padding: 15px; border: 1px solid #ecf0f1; border-radius: 8px;">
+                <strong style="color: #2980b9; font-size: 1.1em;">{{ child.name }}</strong>
+                <p style="margin: 5px 0 0 0; color: #7f8c8d; font-size: 0.9em;">
+                    تولد: {{ child.birth_date }} | قد: {{ child.height|default:"-" }} سم | وزن: {{ child.weight|default:"-" }} ک‌گ | دور سینه: {{ child.chest|default:"-" }} سم
+                </p>
+            </div>
+        {% empty %}
+            <p style="color: #95a5a6;">هنوز فرزندی ثبت نکرده‌اید.</p>
+        {% endfor %}
+    </div>
+
+    <h3 style="color: #2c3e50; border-bottom: 2px solid #f1f2f6; padding-bottom: 10px;">➕ ثبت فرزند جدید</h3>
+    <form method="post" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="نام فرزند" required style="padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
+        <input type="date" name="birth_date" required style="padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
+        
+        <div style="display: flex; gap: 15px;">
+            <input type="number" name="height" placeholder="قد (سم)" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
+            <input type="number" name="weight" placeholder="وزن (ک‌گ)" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
+            <input type="number" name="chest" placeholder="دور سینه (سم)" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #bdc3c7;">
+        </div>
+        <button type="submit" style="background: #3498db; color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 150px;">ثبت مشخصات</button>
+    </form>
+{% endblock %}

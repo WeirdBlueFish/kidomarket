@@ -1,0 +1,28 @@
+{% extends "products/base.html" %} <!-- یا هر نامی که قالب اصلی سایت شما دارد -->
+
+{% block content %}
+<div style="display: flex; max-width: 1100px; margin: 40px auto; gap: 30px; direction: rtl; align-items: flex-start;">
+    
+    <!-- سایدبار سمت راست -->
+    <div style="width: 260px; background: #fff; padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div style="text-align: center; border-bottom: 2px solid #f1f2f6; padding-bottom: 15px; margin-bottom: 20px;">
+            <h3 style="margin: 0 0 5px 0; color: #2c3e50;">{{ request.user.get_full_name|default:request.user.username }}</h3>
+            <span style="font-size: 0.85em; color: #95a5a6;">داشبورد کاربری</span>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="{% url 'accounts:profile' %}" style="display: block; padding: 12px 15px; background: #f8f9fa; color: #34495e; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s;">👤 اطلاعات شخصی</a>
+            <a href="{% url 'accounts:profile_orders' %}" style="display: block; padding: 12px 15px; background: #f8f9fa; color: #34495e; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s;">📦 سفارشات من</a>
+            <a href="{% url 'accounts:profile_children' %}" style="display: block; padding: 12px 15px; background: #f8f9fa; color: #34495e; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s;">👶 مشخصات فرزندان</a>
+        </div>
+    </div>
+
+    <!-- باکس محتوای متغیر سمت چپ -->
+    <div style="flex: 1; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        {% block profile_content %}
+        <!-- محتوای صفحات داخلی اینجا قرار می‌گیرد -->
+        {% endblock %}
+    </div>
+
+</div>
+{% endblock %}
