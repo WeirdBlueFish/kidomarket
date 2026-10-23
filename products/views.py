@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from .models import Products, Category, Comment
-
+from django.db.models import Avg 
 # Create your views here.
 
 def product_list(request):
@@ -47,6 +47,10 @@ def product_detail(request, pk):
 
     comments = product.comments.filter(is_active=True)
 
+    avg_dict = comments.aggregate(Avg('rating'))
+    avg_rating = round(avg_dict['rating__avg'], 1) if avg_dict['rating__avg'] else 0
+    comments_count = comments.count()
+
     if request.method == 'POST':
         auto_name = request.user.get_full_name() or request.user.username
         body = request.POST.get('body')
@@ -62,5 +66,7 @@ def product_detail(request, pk):
                    {
                        'product': product,
                        'similar_products': similar_products,
-                       'comments': comments
+                       'comments': comments,
+                       'avg_rating': avg_rating,     
+                       'comments_count': comments_count
                     })

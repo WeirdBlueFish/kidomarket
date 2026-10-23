@@ -148,7 +148,18 @@
     <!-- بخش اطلاعات اصلی -->
     <div class="info-section">
         <h1>{{ product.name }}</h1>
-        
+        <div style="margin-bottom: 20px; color: #f1c40f; font-size: 1.2em; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            {% if comments_count > 0 %}
+                <span>⭐ {{ avg_rating }}</span>
+                <span style="color: #7f8c8d; font-size: 0.75em; font-weight: normal; margin-right: 5px;">
+                    (از {{ comments_count }} رای ثبت شده)
+                </span>
+            {% else %}
+                <span style="color: #bdc3c7; font-size: 0.8em; font-weight: normal;">
+                    ⭐ هنوز امتیازی ثبت نشده
+                </span>
+            {% endif %}
+        </div>
         <div class="badges-container">
             <span class="badge badge-gender">
                 {% if product.gender == 'boy' %}پسرونه 👦🏻{% elif product.gender == 'girl' %}دخترونه 👧🏻{% else %}اسپرت 👕{% endif %}
