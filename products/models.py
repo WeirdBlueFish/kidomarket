@@ -73,6 +73,8 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
     is_active = models.BooleanField(default=False, verbose_name="تایید شده / نمایش داده شود؟")
 
+    rating = models.PositiveSmallIntegerField(default=5, verbose_name="امتیاز")
+
     class Meta:
         ordering = ('-created',)
         verbose_name = "نظر"

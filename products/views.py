@@ -50,8 +50,10 @@ def product_detail(request, pk):
     if request.method == 'POST':
         auto_name = request.user.get_full_name() or request.user.username
         body = request.POST.get('body')
-        if body:
-            Comment.objects.create(product=product, name=auto_name, body=body)
+        rating = request.POST.get('rating')
+
+        if body and rating:
+            Comment.objects.create(product=product, name=auto_name, body=body, rating=rating)
             # رفرش کردن صفحه برای جلوگیری از ارسال مجدد فرم
             return redirect('product_detail', pk=product.id)
         
