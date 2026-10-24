@@ -174,11 +174,76 @@
         </div>
         {% endif %}
         
+        <!-- سیستم پیشنهاد هوشمند سایز (بلاک جدید اضافه شده) -->
+        {% if user.is_authenticated and children %}
+        <div style="background: #f0f8ff; border: 1px solid #cce7ff; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+            <h4 style="margin-top: 0; color: #2980b9;">🤖 پیشنهاد هوشمند سایز کی‌دو مارکت</h4>
+            <p style="font-size: 0.9em; color: #7f8c8d;">برای کدام فرزند خرید می‌کنید؟</p>
+            
+            <select id="child-selector" style="padding: 10px; border-radius: 5px; width: 100%; border: 1px solid #bdc3c7; margin-bottom: 10px; font-family: inherit;">
+                <option value="">یک فرزند را انتخاب کنید...</option>
+                {% for child in children %}
+                    <option value="{{ child.height|default:0 }}">{{ child.name }} (قد: {{ child.height|default:"نامشخص" }} سانتی‌متر)</option>
+                {% endfor %}
+            </select>
+            
+            <div id="size-result" style="font-size: 1.1em; font-weight: bold; color: #27ae60; margin-top: 10px;"></div>
+        </div>
+        
+        <!-- اسکریپت سیستم پیشنهاد که به فرم شما متصل است -->
+        <script>
+            const availableSizes = [
+                {% for size in product.sizes.all %}
+                    {% if size.min_height and size.max_height %}
+                    { id: "{{ size.id }}", name: "{{ size.name }}", min: {{ size.min_height }}, max: {{ size.max_height }} },
+                    {% endif %}
+                {% endfor %}
+            ];
+
+            document.getElementById('child-selector').addEventListener('change', function() {
+                const childHeight = parseInt(this.value);
+                let resultDiv = document.getElementById('size-result');
+                const sizeSelectDropdown = document.getElementById('size-select');
+                
+                if (isNaN(childHeight) || childHeight === 0) {
+                    resultDiv.innerHTML = "⚠️ برای پیشنهاد سایز، ابتدا قد فرزند را در پروفایل تکمیل کنید.";
+                    resultDiv.style.color = "#e67e22";
+                    return;
+                }
+
+                let bestFit = null;
+                for (let size of availableSizes) {
+                    if (childHeight >= size.min && childHeight <= size.max) {
+                        bestFit = size;
+                        break;
+                    }
+                }
+
+                if (bestFit) {
+                    resultDiv.innerHTML = "✅ پیشنهاد سیستم: <span>" + bestFit.name + "</span> (به صورت خودکار انتخاب شد)";
+                    resultDiv.style.color = "#27ae60";
+                    
+                    // سایز را در منوی پایین به صورت خودکار انتخاب می‌کند
+                    sizeSelectDropdown.value = bestFit.id;
+                    updateProductUI(); // تابع شما برای نمایش قیمت را صدا می‌زند
+                } else {
+                    resultDiv.innerHTML = "❌ متاسفانه سایز مناسبی برای این قد در این مدل موجود نیست.";
+                    resultDiv.style.color = "#c0392b";
+                    
+                    sizeSelectDropdown.value = "";
+                    updateProductUI();
+                }
+            });
+        </script>
+        {% endif %}
+        <!-- پایان سیستم پیشنهاد هوشمند -->
+
         <!-- فرم هوشمند سبد خرید -->
-            <form action="{% url 'cart_add' product.id %}" method="post" style="margin-top: auto;">
-                {% csrf_token %}
+        <form action="{% url 'cart_add' product.id %}" method="post" style="margin-top: auto;">
+            {% csrf_token %}
             <input type="hidden" name="quantity" value="1">
             
+            <!-- کلمه name="size_id" وظیفه ارسال سایز را بر عهده دارد -->
             <label class="size-selector-label" for="size-select">📏 انتخاب سایز:</label>
             <select name="size_id" id="size-select" onchange="updateProductUI()" required>
                 <option value="">-- برای مشاهده قیمت و موجودی، یک سایز انتخاب کنید --</option>
@@ -298,8 +363,6 @@
 </div>
 {% endif %}
 
-
-
 <!-- موتور جاوااسکریپت برای مدیریت سایزها -->
 <script>
     function updateProductUI() {
@@ -321,10 +384,10 @@
             const stock = parseInt(selectedOption.getAttribute("data-stock"));
             const rawFeatures = selectedOption.getAttribute("data-features");
 
-            // آپدیت قیمت (با کاما برای خوانایی بهتر اعداد بزرگ)
+            // آپدیت قیمت
             document.getElementById("display-price").innerText = price + " تومان";
 
-            // پردازش و نمایش ویژگی‌ها به صورت باکس‌های حرفه‌ای
+            // پردازش ویژگی‌ها
             featuresBox.innerHTML = "";
             const cleanFeatures = rawFeatures.replace(/\\u000D\\u000A|\\n|\\r\\n/g, '\n').split('\n');
             
@@ -348,7 +411,7 @@
                 featuresBox.innerHTML = "<span style='color: #95a5a6; font-size: 0.9em;'>ویژگی خاصی ثبت نشده است.</span>";
             }
 
-            // بررسی موجودی دقیق همین سایز
+            // بررسی موجودی
             const stockDisplay = document.getElementById("display-stock");
             if (stock > 0) {
                 stockDisplay.innerText = "✅ موجود در انبار (" + stock + " عدد)";

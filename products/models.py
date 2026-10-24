@@ -57,6 +57,10 @@ class ProductSize(models.Model):
     price = models.PositiveIntegerField(verbose_name='قیمت (تومان)', default=0)
     stock = models.PositiveIntegerField(verbose_name='موجودی', default=0)
 
+
+    min_height = models.PositiveIntegerField(blank=True, null=True, verbose_name="حداقل قد کودک (سانتی‌متر)")
+    max_height = models.PositiveIntegerField(blank=True, null=True, verbose_name="حداکثر قد کودک (سانتی‌متر)")
+    
     features = models.TextField(blank=True, null=True, verbose_name="ویژگی‌های ابعاد", help_text="هر ویژگی را در یک خط بنویسید. مثلاً: قد آستین: 40 سانتی‌متر")
 
     class Meta:

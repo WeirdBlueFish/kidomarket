@@ -43,6 +43,8 @@ def product_detail(request, pk):
 
     product = get_object_or_404(Products, pk=pk)
 
+    children = request.user.children.all() if request.user.is_authenticated else None
+
     similar_products = Products.objects.filter(gender=product.gender, is_active=True).exclude(id=product.id)[:4]
 
     comments_list = product.comments.filter(is_active=True)
@@ -72,5 +74,6 @@ def product_detail(request, pk):
                        'similar_products': similar_products,
                        'comments': comments,
                        'avg_rating': avg_rating,     
-                       'comments_count': comments_count
+                       'comments_count': comments_count,
+                       'children': children,
                     })
