@@ -1,0 +1,151 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-slate-800">پیشخوان آماری کی‌دو مارکت</h2>
+    <p class="text-gray-500 mt-1 font-bold">نمای کلی از وضعیت فروش و موجودی شعبه‌های دخترانه و پسرانه (رده سنی ۱ تا ۱۶ سال)</p>
+</div>
+
+<!-- باکس‌های آماری -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    
+    <!-- باکس درآمد کل -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:-translate-y-1 transition duration-300">
+        <div class="w-14 h-14 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shrink-0">
+            <i class="fa-solid fa-wallet"></i>
+        </div>
+        <div>
+            <p class="text-sm font-bold text-gray-500 mb-1">درآمد این ماه</p>
+            <h3 class="text-xl font-bold text-slate-800">{{ total_income|default:"۱۲,۴۵۰,۰۰۰" }} <span class="text-sm font-normal text-gray-500">تومان</span></h3>
+        </div>
+    </div>
+
+    <!-- باکس کل محصولات -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:-translate-y-1 transition duration-300">
+        <div class="w-14 h-14 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl shrink-0">
+            <i class="fa-solid fa-tags"></i>
+        </div>
+        <div>
+            <p class="text-sm font-bold text-gray-500 mb-1">تعداد محصولات</p>
+            <h3 class="text-xl font-bold text-slate-800">{{ total_products|default:"۳۴۲" }} <span class="text-sm font-normal text-gray-500">عدد</span></h3>
+        </div>
+    </div>
+
+    <!-- باکس سفارشات دخترانه -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:-translate-y-1 transition duration-300">
+        <div class="w-14 h-14 rounded-xl bg-pink-100 text-pink-500 flex items-center justify-center text-2xl shrink-0">
+            <i class="fa-solid fa-child-dress"></i>
+        </div>
+        <div>
+            <p class="text-sm font-bold text-gray-500 mb-1">سفارشات دخترانه</p>
+            <h3 class="text-xl font-bold text-slate-800">{{ girl_orders|default:"۱۸۵" }} <span class="text-sm font-normal text-gray-500">سفارش</span></h3>
+        </div>
+    </div>
+
+    <!-- باکس سفارشات پسرانه -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:-translate-y-1 transition duration-300">
+        <div class="w-14 h-14 rounded-xl bg-orange-100 text-orange-500 flex items-center justify-center text-2xl shrink-0">
+            <i class="fa-solid fa-child"></i>
+        </div>
+        <div>
+            <p class="text-sm font-bold text-gray-500 mb-1">سفارشات پسرانه</p>
+            <h3 class="text-xl font-bold text-slate-800">{{ boy_orders|default:"۱۴۲" }} <span class="text-sm font-normal text-gray-500">سفارش</span></h3>
+        </div>
+    </div>
+
+</div>
+
+<!-- نمودار فروش و لیست سفارشات اخیر -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- نمودار (بخش بزرگتر) -->
+    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-100 pb-3">نمودار فروش ۷ روز گذشته (تفکیک شعبه)</h3>
+        <div class="relative h-72 w-full">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- آخرین سفارشات (بخش کوچکتر) -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-100 pb-3">سفارشات اخیر</h3>
+        
+        <div class="flex flex-col gap-3 flex-1 overflow-y-auto">
+            <!-- ردیف نمونه اول -->
+            <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-gray-100">
+                <div>
+                    <strong class="text-blue-600 block text-sm">#۱۰۲۴</strong>
+                    <span class="text-xs text-gray-500">علی رضایی</span>
+                </div>
+                <div class="text-left">
+                    <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-bold block mb-1 text-center">موفق</span>
+                    <span class="text-xs font-bold text-slate-700">۴۵۰,۰۰۰ ت</span>
+                </div>
+            </div>
+            
+            <!-- ردیف نمونه دوم -->
+            <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-gray-100">
+                <div>
+                    <strong class="text-blue-600 block text-sm">#۱۰۲۳</strong>
+                    <span class="text-xs text-gray-500">سارا احمدی</span>
+                </div>
+                <div class="text-left">
+                    <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold block mb-1 text-center">در انتظار</span>
+                    <span class="text-xs font-bold text-slate-700">۲۸۰,۰۰۰ ت</span>
+                </div>
+            </div>
+        </div>
+        
+        <a href="#" class="block text-center mt-4 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white py-2 rounded-lg text-sm font-bold transition">مشاهده همه سفارشات ←</a>
+    </div>
+</div>
+
+<!-- اسکریپت راه‌اندازی Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // هماهنگ‌سازی فونت چارت با سایت
+    Chart.defaults.font.family = 'Vazirmatn';
+    
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'],
+            datasets: [
+                {
+                    label: 'شعبه دخترانه',
+                    data: [12, 19, 15, 25, 22, 30, 28], // این دیتاها بعداً از بک‌اند تزریق میشن
+                    borderColor: '#ec4899', // Pink
+                    backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ec4899'
+                },
+                {
+                    label: 'شعبه پسرانه',
+                    data: [10, 15, 12, 20, 18, 25, 20],
+                    borderColor: '#f97316', // Orange
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#f97316'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { font: { family: 'Vazirmatn', weight: 'bold' } } },
+                tooltip: { titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' } }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}

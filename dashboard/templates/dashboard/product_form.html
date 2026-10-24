@@ -1,0 +1,39 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+    
+    <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+        <h2>{% if is_edit %}✏️ ویرایش محصول{% else %}➕ افزودن محصول جدید{% endif %}</h2>
+        <a href="{% url 'dashboard_product_list' %}" class="text-gray-500 hover:text-slate-800 font-bold transition text-sm">بازگشت به لیست ⮌</a>
+    </div>
+
+    <!-- استایل‌دهی خودکار تمام فیلدهای Input, Textarea و Select -->
+    <form method="post" enctype="multipart/form-data" class="flex flex-col gap-6 [&_label]:block [&_label]:font-bold [&_label]:text-slate-700 [&_label]:mb-2 [&_input]:w-full [&_input]:p-3 [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:focus:border-blue-500 [&_input]:focus:ring-0 [&_input]:outline-none [&_input]:transition [&_textarea]:w-full [&_textarea]:p-3 [&_textarea]:rounded-xl [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:focus:border-blue-500 [&_textarea]:focus:ring-0 [&_textarea]:outline-none [&_textarea]:transition [&_select]:w-full [&_select]:p-3 [&_select]:rounded-xl [&_select]:border [&_select]:border-gray-300 [&_select]:focus:border-blue-500 [&_select]:focus:ring-0 [&_select]:outline-none [&_select]:transition">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for field in form %}
+                <!-- فیلدهای توضیحات و عکس کل عرض را می‌گیرند -->
+                <div class="{% if field.name == 'description' or field.name == 'image' %}md:col-span-2{% endif %} bg-slate-50 p-4 rounded-xl border border-gray-100">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    
+                    {% if field.errors %}
+                        <div class="text-red-500 text-sm font-bold mt-2 px-1">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="border-t border-gray-100 pt-6 flex justify-end">
+            <button type="submit" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-10 rounded-xl transition shadow-sm text-lg">
+                ذخیره محصول در کی‌دو مارکت
+            </button>
+        </div>
+    </form>
+    
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">مدیریت محصولات</h2>
+        <p class="text-gray-500 mt-1 text-sm font-bold">لیست تمامی لباس‌های ثبت شده در سیستم</p>
+    </div>
+    <a href="#" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-5 rounded-xl transition shadow-sm flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i> افزودن محصول جدید
+    </a>
+</div>
+
+<!-- نوار جستجو و فیلتر -->
+<div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-6">
+    <form method="get" class="flex flex-col sm:flex-row gap-3">
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="جستجو بر اساس نام محصول..." class="flex-1 p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-0 outline-none font-sans text-sm transition">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
+            <i class="fa-solid fa-magnifying-glass"></i> جستجو
+        </button>
+        {% if request.GET.q %}
+            <a href="{% url 'dashboard_product_list' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 px-6 rounded-lg transition text-center">حذف فیلتر</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- جدول محصولات -->
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-right whitespace-nowrap">
+            <thead class="bg-slate-50 text-slate-600 border-b border-gray-200">
+                <tr>
+                    <th class="p-4 font-bold text-sm w-16">عکس</th>
+                    <th class="p-4 font-bold text-sm">نام محصول</th>
+                    <th class="p-4 font-bold text-sm">شعبه / رده سنی</th>
+                    <th class="p-4 font-bold text-sm">قیمت پایه</th>
+                    <th class="p-4 font-bold text-sm text-center">عملیات</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for product in products %}
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="p-4">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="w-12 h-12 object-cover rounded-lg shadow-sm">
+                            {% else %}
+                                <div class="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center text-gray-500 text-xs">بدون عکس</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-4">
+                            <strong class="text-slate-800 block">{{ product.name }}</strong>
+                            <span class="text-xs text-gray-500">کد: {{ product.id }}</span>
+                        </td>
+                        <td class="p-4">
+                            <span class="block text-sm font-bold {% if product.gender == 'girl' %}text-pink-500{% elif product.gender == 'boy' %}text-orange-500{% else %}text-slate-500{% endif %}">
+                                {% if product.gender == 'boy' %}پسرونه{% elif product.gender == 'girl' %}دخترونه{% else %}اسپرت{% endif %}
+                            </span>
+                            <span class="text-xs text-gray-500">{{ product.min_age }} تا {{ product.max_age }} سال</span>
+                        </td>
+                        <td class="p-4 text-emerald-600 font-bold">{{ product.price }} تومان</td>
+                        <td class="p-4 text-center">
+                            <div class="flex justify-center gap-2">
+                                <a href="{% url 'dashboard_product_edit' product.id %}" class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded-lg transition" title="ویرایش">
+                                    <i class="fa-solid fa-pen text-sm"></i>
+                                </a>
+                                <a href="{% url 'dashboard_product_delete' product.id %}" class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition" title="حذف">
+                                    <i class="fa-solid fa-trash text-sm"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-8 text-center text-gray-500 font-bold">هیچ محصولی یافت نشد.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- صفحه‌بندی -->
+{% if products.has_other_pages %}
+<div class="flex justify-center gap-2 mt-6">
+    {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-4 py-2 bg-white border border-gray-200 text-slate-700 rounded-lg hover:bg-slate-50 font-bold transition">قبلی</a>
+    {% endif %}
+    <span class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold">{{ products.number }}</span>
+    {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-4 py-2 bg-white border border-gray-200 text-slate-700 rounded-lg hover:bg-slate-50 font-bold transition">بعدی</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="max-w-md mx-auto mt-10 bg-white p-8 rounded-2xl shadow-sm border border-red-100 text-center">
+    
+    <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    
+    <h2 class="text-2xl font-bold text-slate-800 mb-2">حذف محصول</h2>
+    <p class="text-gray-600 mb-6 leading-relaxed">
+        آیا از حذف محصول <strong class="text-slate-800">"{{ product.name }}"</strong> اطمینان دارید؟ این عملیات غیرقابل بازگشت است.
+    </p>
+
+    <form method="post" class="flex gap-3">
+        {% csrf_token %}
+        <button type="submit" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-xl transition shadow-sm">
+            بله، حذف شود
+        </button>
+        <a href="{% url 'dashboard_product_list' %}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl transition text-center">
+            انصراف
+        </a>
+    </form>
+    
+</div>
+{% endblock %}
