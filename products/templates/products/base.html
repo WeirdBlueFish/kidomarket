@@ -2,60 +2,111 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فروشگاه لباس کودک</title>
-    <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
-        /* استایل هدر سایت */
-        .header { background-color: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .header a { color: white; text-decoration: none; font-weight: bold; }
-        .header-logo { font-size: 1.3em; }
-        .cart-badge { background-color: #e74c3c; padding: 2px 8px; border-radius: 12px; font-size: 0.9em; margin-right: 5px; }
-        
-        .container { padding: 20px; }
-    </style>
-    <!-- ما می‌توانیم استایل‌های صفحات دیگر را در اینجا (block css) قرار دهیم -->
+    
+    <!-- إضافة خط Vazirmatn الاحترافي -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- مكتبة Tailwind CSS عبر CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
     {% block css %}{% endblock %}
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
-    <!-- هدر سایت که در همه جا تکرار می‌شود -->
-    <div class="header">
-        <a href="{% url 'product_list' %}" class="header-logo">🧸 فروشگاه کودک من</a>
-        
-        <a href="{% url 'cart_detail' %}">
-            سبد خرید 🛒
-            <!-- اگر سبد خالی نبود، دایره قرمز رنگ تعداد را نشان بده -->
-            {% if cart|length > 0 %}
-                <span class="cart-badge">{{ cart|length }}</span>
-            {% endif %}
-        </a>
-    </div>
-    <div style="float: left; padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-size: 0.9em;">
-        <!-- بررسی می‌کنیم که آیا کاربر وارد حساب شده است یا نه -->
-        {% if user.is_authenticated %}
-            <!-- این خط را جایگزین خط قبلی کنید -->
-            <a href="{% url 'accounts:profile' %}" style="color: #2980b9; font-weight: bold; margin-left: 15px; text-decoration: none;">
-                👤 پروفایل من ({{ user.username }})
-            </a>
-            <a href="{% url 'accounts:logout' %}" style="color: #e74c3c; text-decoration: none; font-weight: bold;">
-                خروج از حساب 🚪
-            </a>
-        {% else %}
-            <!-- اگر کاربر مهمان بود، دکمه‌های ورود و ثبت‌نام را نشان می‌دهیم -->
-            <a href="{% url 'accounts:login' %}" style="color: #2ecc71; text-decoration: none; font-weight: bold; margin-left: 15px;">
-                ورود به حساب 🔓
-            </a>
-            <a href="{% url 'accounts:register' %}" style="color: #3498db; text-decoration: none; font-weight: bold;">
-                ثبت‌نام کاربر جدید 📝
-            </a>
-        {% endif %}
-    </div>
+    <!-- شريط التنقل العلوي (Navbar) -->
+    <nav class="bg-slate-800 shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- شعار الموقع -->
+                <div class="flex-shrink-0">
+                    <a href="{% url 'product_list' %}" class="text-white font-bold text-xl tracking-tight hover:text-gray-300 transition">🧸 فروشگاه کودک من</a>
+                </div>
+                
+                <!-- روابط الشاشات الكبيرة (Desktop) -->
+                <div class="hidden md:flex items-center space-x-reverse space-x-6">
+                    
+                    <!-- قسم حساب المستخدم -->
+                    <div class="flex items-center space-x-reverse space-x-4 bg-slate-700 px-4 py-2 rounded-lg">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'accounts:profile' %}" class="text-blue-300 hover:text-white text-sm font-bold transition">👤 پروفایل ({{ user.username }})</a>
+                            <a href="{% url 'accounts:logout' %}" class="text-red-400 hover:text-red-300 text-sm font-bold transition">خروج 🚪</a>
+                        {% else %}
+                            <a href="{% url 'accounts:login' %}" class="text-emerald-400 hover:text-emerald-300 text-sm font-bold transition">ورود 🔓</a>
+                            <a href="{% url 'accounts:register' %}" class="text-blue-400 hover:text-blue-300 text-sm font-bold transition">ثبت‌نام 📝</a>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- سلة المشتريات -->
+                    <a href="{% url 'cart_detail' %}" class="relative text-white hover:text-gray-300 transition flex items-center font-medium">
+                        سبد خرید 🛒
+                        {% if cart|length > 0 %}
+                            <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">{{ cart|length }}</span>
+                        {% endif %}
+                    </a>
+                </div>
 
-    <!-- محتوای متغیر هر صفحه اینجا جایگذاری می‌شود -->
-    <div class="container">
+                <!-- زر القائمة للهواتف (Mobile Menu Button) -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 rounded-md p-2">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- القائمة المنسدلة للهواتف (Mobile Menu) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-700 border-t border-slate-600">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="{% url 'cart_detail' %}" class="flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-600 transition">
+                    <span>سبد خرید 🛒</span>
+                    {% if cart|length > 0 %}
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{{ cart|length }}</span>
+                    {% endif %}
+                </a>
+                
+                <div class="border-t border-slate-600 my-2 pt-2"></div>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" class="block px-3 py-2 rounded-md text-base font-medium text-blue-300 hover:bg-slate-600 transition">👤 پروفایل ({{ user.username }})</a>
+                    <a href="{% url 'accounts:logout' %}" class="block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-slate-600 transition">خروج 🚪</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="block px-3 py-2 rounded-md text-base font-medium text-emerald-400 hover:bg-slate-600 transition">ورود 🔓</a>
+                    <a href="{% url 'accounts:register' %}" class="block px-3 py-2 rounded-md text-base font-medium text-blue-400 hover:bg-slate-600 transition">ثبت‌نام 📝</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- محتوى الصفحات الديناميكي -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
 
+    <!-- كود جافا سكريبت لتشغيل القائمة على الهواتف -->
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>

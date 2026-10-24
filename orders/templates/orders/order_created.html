@@ -1,11 +1,18 @@
 {% extends "products/base.html" %}
 
 {% block content %}
-<div style="background: white; max-width: 600px; margin: 0 auto; padding: 40px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-    <h1 style="color: #2ecc71; font-size: 3em; margin: 0;">✅</h1>
-    <h2>سفارش شما با موفقیت ثبت شد!</h2>
-    <p>شماره پیگیری سفارش شما: <strong>{{ order.id }}</strong></p>
-    <p>از خرید شما سپاسگزاریم. به زودی برای ارسال با شما تماس خواهیم گرفت.</p>
-    <a href="{% url 'payment_process' order.id %}" style="display: inline-block; margin-top: 20px; background-color: #2ecc71; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1.1em;">پرداخت آنلاین فاکتور 💳</a>
+<div class="max-w-xl mx-auto mt-16 mb-24 bg-white p-10 md:p-12 rounded-2xl shadow-sm border border-gray-100 text-center">
+    <span class="text-7xl block mb-6">✅</span>
+    <h2 class="text-2xl md:text-3xl font-bold text-emerald-600 mb-6">سفارش شما با موفقیت ثبت شد!</h2>
+    
+    <div class="bg-emerald-50 text-emerald-800 p-4 rounded-xl border border-emerald-100 mb-6 inline-block w-full">
+        <p class="m-0 text-lg">شماره پیگیری سفارش شما: <strong class="text-xl mx-1">#{{ order.id }}</strong></p>
+    </div>
+    
+    <p class="text-gray-500 mb-8 leading-relaxed">از خرید شما سپاسگزاریم. لطفاً برای نهایی شدن فرآیند خرید، مبلغ فاکتور را پرداخت کنید.</p>
+    
+    <a href="{% url 'payment_process' order.id %}" class="block sm:inline-block w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-10 rounded-xl transition duration-300 shadow-sm text-lg">
+        پرداخت آنلاین فاکتور 💳
+    </a>
 </div>
 {% endblock %}

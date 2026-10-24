@@ -2,26 +2,43 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>درگاه پرداخت</title>
-    <style>
-        body { font-family: Tahoma; background-color: #f1f2f6; display: flex; justify-content: center; padding-top: 100px; }
-        .bank-card { background: white; padding: 30px; border-radius: 10px; border-top: 5px solid #2980b9; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 400px; text-align: center; }
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; color: white; width: 45%; margin: 5px; }
-        .btn-pay { background-color: #27ae60; }
-        .btn-cancel { background-color: #e74c3c; }
-    </style>
+    
+    <!-- فونت و Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <div class="bank-card">
-        <h2>درگاه پرداخت شبیه‌سازی‌شده بانک</h2>
-        <p>فروشگاه لباس کودک 🧸</p>
-        <p style="font-size: 1.2em;">مبلغ پرداختی: <strong>{{ total_price }} تومان</strong></p>
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-        <form method="post">
+<body class="bg-slate-100 font-sans flex items-center justify-center min-h-screen px-4">
+
+    <div class="bg-white w-full max-w-md p-8 md:p-10 rounded-2xl border-t-8 border-blue-600 shadow-xl text-center">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">درگاه پرداخت شبیه‌سازی‌شده</h2>
+        <p class="text-gray-500 mb-6">فروشگاه لباس کودک 🧸</p>
+        
+        <div class="bg-slate-50 border border-gray-100 rounded-xl p-5 mb-6">
+            <span class="text-gray-500 block mb-2">مبلغ پرداختی:</span>
+            <strong class="text-2xl text-slate-800">{{ total_price }} تومان</strong>
+        </div>
+        
+        <form method="post" class="flex flex-col sm:flex-row gap-3">
             {% csrf_token %}
-            <button type="submit" name="pay" class="btn btn-pay">پرداخت موفق</button>
-            <button type="submit" name="cancel" class="btn btn-cancel">انصراف</button>
+            <button type="submit" name="pay" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl transition duration-300 shadow-sm">
+                پرداخت موفق
+            </button>
+            <button type="submit" name="cancel" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 px-4 rounded-xl transition duration-300 shadow-sm">
+                انصراف
+            </button>
         </form>
     </div>
+
 </body>
 </html>

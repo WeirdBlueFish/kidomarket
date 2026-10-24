@@ -1,26 +1,25 @@
-{% extends "products/base.html" %} <!-- یا هر نامی که قالب اصلی سایت شما دارد -->
+{% extends "products/base.html" %}
 
 {% block content %}
-<div style="display: flex; max-width: 1100px; margin: 40px auto; gap: 30px; direction: rtl; align-items: flex-start;">
+<div class="flex flex-col md:flex-row max-w-6xl mx-auto my-8 md:my-12 gap-6 px-4 sm:px-0">
     
-    <!-- سایدبار سمت راست -->
-    <div style="width: 260px; background: #fff; padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <div style="text-align: center; border-bottom: 2px solid #f1f2f6; padding-bottom: 15px; margin-bottom: 20px;">
-            <h3 style="margin: 0 0 5px 0; color: #2c3e50;">{{ request.user.get_full_name|default:request.user.username }}</h3>
-            <span style="font-size: 0.85em; color: #95a5a6;">داشبورد کاربری</span>
+    <!-- سایدبار -->
+    <div class="w-full md:w-72 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 shrink-0 h-fit">
+        <div class="text-center border-b-2 border-gray-100 pb-5 mb-5">
+            <h3 class="m-0 text-xl font-bold text-slate-800">{{ request.user.get_full_name|default:request.user.username }}</h3>
+            <span class="text-sm text-gray-500 mt-1 block">داشبورد کاربری</span>
         </div>
         
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <a href="{% url 'accounts:profile' %}" style="display: block; padding: 12px 15px; background: #f8f9fa; color: #34495e; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s;">👤 اطلاعات شخصی</a>
-            <a href="{% url 'accounts:profile_orders' %}" style="display: block; padding: 12px 15px; background: #f8f9fa; color: #34495e; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s;">📦 سفارشات من</a>
-            <a href="{% url 'accounts:profile_children' %}" style="display: block; padding: 12px 15px; background: #f8f9fa; color: #34495e; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s;">👶 مشخصات فرزندان</a>
+        <div class="flex flex-col gap-2">
+            <a href="{% url 'accounts:profile' %}" class="block p-3.5 bg-slate-50 hover:bg-blue-500 text-slate-700 hover:text-white rounded-xl font-bold transition duration-300">👤 اطلاعات شخصی</a>
+            <a href="{% url 'accounts:profile_orders' %}" class="block p-3.5 bg-slate-50 hover:bg-blue-500 text-slate-700 hover:text-white rounded-xl font-bold transition duration-300">📦 سفارشات من</a>
+            <a href="{% url 'accounts:profile_children' %}" class="block p-3.5 bg-slate-50 hover:bg-blue-500 text-slate-700 hover:text-white rounded-xl font-bold transition duration-300">👶 مشخصات فرزندان</a>
         </div>
     </div>
 
-    <!-- باکس محتوای متغیر سمت چپ -->
-    <div style="flex: 1; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <!-- باکس محتوای متغیر -->
+    <div class="flex-1 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {% block profile_content %}
-        <!-- محتوای صفحات داخلی اینجا قرار می‌گیرد -->
         {% endblock %}
     </div>
 

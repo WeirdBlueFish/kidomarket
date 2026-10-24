@@ -2,35 +2,46 @@
 {% load accounts_tags %}
 
 {% block profile_content %}
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f2f6; padding-bottom: 10px; margin-bottom: 20px;">
-        <h2 style="color: #2c3e50; margin: 0;">جزئیات فاکتور #{{ order.id }}</h2>
-        <a href="{% url 'accounts:profile_orders' %}" style="color: #7f8c8d; text-decoration: none; font-weight: bold;">بازگشت به سفارشات ⮌</a>
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b-2 border-gray-100 pb-4 mb-6 gap-4">
+        <h2 class="text-2xl font-bold text-slate-800 m-0">جزئیات فاکتور #{{ order.id }}</h2>
+        <a href="{% url 'accounts:profile_orders' %}" class="text-gray-500 hover:text-slate-800 font-bold transition text-sm">بازگشت به سفارشات ⮌</a>
     </div>
 
-    <div style="background: #fdfefe; border: 1px solid #ecf0f1; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: flex; gap: 30px;">
-        <div><span style="color: #7f8c8d;">تاریخ ثبت:</span> <strong>{{ order.created|to_jalali }}</strong></div>
-        <div><span style="color: #7f8c8d;">وضعیت پرداخت:</span> <strong>{% if order.paid %}موفق{% else %}ناموفق{% endif %}</strong></div>
+    <div class="bg-slate-50 border border-gray-100 rounded-xl p-5 mb-8 flex flex-col sm:flex-row gap-6">
+        <div>
+            <span class="text-gray-500 text-sm">تاریخ ثبت:</span> 
+            <strong class="text-slate-800">{{ order.created|to_jalali }}</strong>
+        </div>
+        <div>
+            <span class="text-gray-500 text-sm">وضعیت پرداخت:</span> 
+            {% if order.paid %}
+                <strong class="text-emerald-600">موفق</strong>
+            {% else %}
+                <strong class="text-red-500">ناموفق</strong>
+            {% endif %}
+        </div>
     </div>
 
-    <table style="width: 100%; border-collapse: collapse; text-align: right;">
-        <thead>
-            <tr style="background-color: #f8f9fa; color: #34495e; border-bottom: 2px solid #ecf0f1;">
-                <th style="padding: 15px;">محصول</th>
-                <th style="padding: 15px;">تعداد</th>
-                <th style="padding: 15px;">قیمت واحد</th>
-                <th style="padding: 15px;">قیمت کل</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- معمولا نام ارتباط آیتم‌ها در جنگو items است، در غیر این صورت orderitem_set بنویسید -->
-            {% for item in order.items.all %}
-                <tr style="border-bottom: 1px solid #ecf0f1;">
-                    <td style="padding: 15px; color: #2980b9; font-weight: bold;">{{ item.product.name }}</td>
-                    <td style="padding: 15px;">{{ item.quantity }} عدد</td>
-                    <td style="padding: 15px;">{{ item.price }} تومان</td>
-                    <td style="padding: 15px;">{{ item.get_cost }} تومان</td>
+    <div class="overflow-x-auto rounded-xl border border-gray-200">
+        <table class="w-full text-right whitespace-nowrap">
+            <thead class="bg-slate-50 text-slate-600 border-b border-gray-200">
+                <tr>
+                    <th class="p-4 font-bold text-sm">محصول</th>
+                    <th class="p-4 font-bold text-sm">تعداد</th>
+                    <th class="p-4 font-bold text-sm">قیمت واحد</th>
+                    <th class="p-4 font-bold text-sm">قیمت کل</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for item in order.items.all %}
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="p-4 font-bold text-slate-800">{{ item.product.name }}</td>
+                        <td class="p-4 text-gray-600">{{ item.quantity }} عدد</td>
+                        <td class="p-4 text-gray-600 font-bold">{{ item.price }} تومان</td>
+                        <td class="p-4 text-emerald-600 font-bold">{{ item.get_cost }} تومان</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

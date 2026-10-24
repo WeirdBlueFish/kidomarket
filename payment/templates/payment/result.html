@@ -1,17 +1,20 @@
 {% extends "products/base.html" %}
 
 {% block content %}
-<div style="background: white; max-width: 600px; margin: 0 auto; padding: 40px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+<div class="max-w-xl mx-auto mt-16 mb-24 bg-white p-10 md:p-12 rounded-2xl shadow-sm border border-gray-100 text-center">
+    
     {% if success %}
-        <h1 style="color: #2ecc71; font-size: 4em; margin: 0;">✔</h1>
-        <h2>پرداخت با موفقیت انجام شد!</h2>
-        <p>سفارش شما تایید شد و به زودی ارسال می‌گردد.</p>
+        <span class="text-7xl block mb-6 drop-shadow-sm">✅</span>
+        <h2 class="text-3xl font-bold text-emerald-600 mb-4">پرداخت با موفقیت انجام شد!</h2>
+        <p class="text-gray-500 text-lg mb-8 leading-relaxed">سفارش شما تایید شد و به زودی ارسال می‌گردد.</p>
     {% else %}
-        <h1 style="color: #e74c3c; font-size: 4em; margin: 0;">✖</h1>
-        <h2>پرداخت ناموفق بود!</h2>
-        <p>تراکنش لغو شد. سفارش شما در سیستم ثبت شده اما نیازمند پرداخت است.</p>
+        <span class="text-7xl block mb-6 drop-shadow-sm">❌</span>
+        <h2 class="text-3xl font-bold text-red-500 mb-4">پرداخت ناموفق بود!</h2>
+        <p class="text-gray-500 text-lg mb-8 leading-relaxed">تراکنش لغو شد. سفارش شما در سیستم ثبت شده اما نیازمند پرداخت است.</p>
     {% endif %}
-    <br>
-    <a href="{% url 'product_list' %}" style="display: inline-block; background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;">بازگشت به فروشگاه</a>
+    
+    <a href="{% url 'product_list' %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 px-8 rounded-xl transition duration-300 shadow-sm">
+        بازگشت به فروشگاه
+    </a>
 </div>
 {% endblock %}

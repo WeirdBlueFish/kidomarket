@@ -1,84 +1,84 @@
 {% extends "products/base.html" %}
 
-{% block css %}
-<style>
-    .cart-container { background: white; max-width: 800px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    th, td { padding: 15px; text-align: right; border-bottom: 1px solid #ddd; }
-    th { background-color: #f8f9fa; }
-    .total { font-size: 1.2em; font-weight: bold; color: #27ae60; text-align: left; }
-    .btn-checkout { background-color: #2ecc71; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; float: left; }
-    .btn-back { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #3498db; font-weight: bold;}
-    .img-small { width: 50px; height: 50px; border-radius: 5px; object-fit: cover; }
-    .btn-remove { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="cart-container">
-    <a href="{% url 'product_list' %}" class="btn-back">← ادامه خرید</a>
+<div class="max-w-5xl mx-auto mt-8 mb-16 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
     
-    <h2>سبد خرید شما 🛒</h2>
+    <div class="flex items-center justify-between mb-8 border-b-2 border-gray-100 pb-4">
+        <h2 class="text-2xl font-bold text-slate-800 m-0">سبد خرید شما 🛒</h2>
+        <a href="{% url 'product_list' %}" class="text-blue-500 hover:text-blue-700 font-bold transition text-sm">ادامه خرید ⮌</a>
+    </div>
     
-    <table>
-        <thead>
-            <tr>
-                <th>عکس</th>
-                <th>نام لباس</th>
-                <th>تعداد</th>
-                <th>قیمت واحد</th>
-                <th>قیمت کل</th>
-                <th>عملیات</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- داخل حلقه نمایش سبد خرید -->
-            {% for item in cart %}
-                <tr>
-                    <!-- نمایش عکس (اختیاری) -->
-                    <td>
-                        {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" style="width: 50px; border-radius: 5px;">
-                        {% endif %}
-                    </td>
-                    
-                    <!-- نمایش نام لباس + نام سایز -->
-                    <td>
-                        <strong>{{ item.product.name }}</strong>
-                        <br>
-                        <span style="color: #7f8c8d; font-size: 0.9em;">
-                            سایز انتخابی: {{ item.size.name }}
-                        </span>
-                    </td>
-                    
-                    <!-- نمایش قیمت همون سایز -->
-                    <td>{{ item.price }} تومان</td>
-                    
-                    <!-- نمایش تعداد -->
-                    <td>{{ item.quantity }}</td>
-                    
-                    <!-- قیمت کل این ردیف -->
-                    <td>{{ item.total_price }} تومان</td>
-                    
-                    <!-- دکمه حذف (ارسال آیدی سایز به جای لباس) -->
-                    <td>
-                        <form action="{% url 'cart_remove' item.size.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
-                                حذف ❌
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
     {% if cart|length > 0 %}
-        <p class="total">مبلغ قابل پرداخت: {{ cart.get_total_price }} تومان</p>
-        <a href="{% url 'order_create' %}" class="btn-checkout">تایید و ثبت سفارش ←</a>
+        <div class="overflow-x-auto rounded-xl border border-gray-200 mb-8">
+            <table class="w-full text-right whitespace-nowrap">
+                <thead class="bg-slate-50 text-slate-600 border-b border-gray-200">
+                    <tr>
+                        <th class="p-4 font-bold text-sm">عکس</th>
+                        <th class="p-4 font-bold text-sm">نام لباس</th>
+                        <th class="p-4 font-bold text-sm">قیمت واحد</th>
+                        <th class="p-4 font-bold text-sm text-center">تعداد</th>
+                        <th class="p-4 font-bold text-sm">قیمت کل</th>
+                        <th class="p-4 font-bold text-sm text-center">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for item in cart %}
+                        <tr class="hover:bg-slate-50 transition duration-150">
+                            <!-- عکس -->
+                            <td class="p-4">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-14 h-14 object-cover rounded-lg shadow-sm">
+                                {% else %}
+                                    <div class="w-14 h-14 bg-slate-200 rounded-lg flex items-center justify-center text-xl">📷</div>
+                                {% endif %}
+                            </td>
+                            
+                            <!-- نام و سایز -->
+                            <td class="p-4">
+                                <strong class="text-slate-800 block mb-1">{{ item.product.name }}</strong>
+                                <span class="text-xs font-bold text-gray-500 bg-white border border-gray-200 px-2 py-1 rounded-md">
+                                    سایز: {{ item.size.name }}
+                                </span>
+                            </td>
+                            
+                            <td class="p-4 text-gray-600 font-bold">{{ item.price }} تومان</td>
+                            <td class="p-4 text-slate-800 font-bold text-center">{{ item.quantity }}</td>
+                            <td class="p-4 text-emerald-600 font-bold">{{ item.total_price }} تومان</td>
+                            
+                            <!-- دکمه حذف -->
+                            <td class="p-4 text-center">
+                                <form action="{% url 'cart_remove' item.size.id %}" method="post" class="inline-block">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-2 rounded-lg text-sm font-bold transition">
+                                        حذف ❌
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- بخش پرداخت و تایید -->
+        <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-50 p-6 rounded-xl border border-gray-200 gap-4">
+            <p class="text-lg font-bold text-slate-700 m-0">
+                مبلغ قابل پرداخت: <span class="text-emerald-600 text-xl ml-1">{{ cart.get_total_price }} تومان</span>
+            </p>
+            <a href="{% url 'order_create' %}" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-8 rounded-xl transition shadow-sm text-center">
+                تایید و ثبت سفارش ←
+            </a>
+        </div>
+    {% else %}
+        <!-- نمایش در صورت خالی بودن سبد -->
+        <div class="text-center py-16 px-4 bg-slate-50 border border-gray-100 rounded-xl">
+            <span class="text-6xl mb-4 block">🛒</span>
+            <p class="text-gray-500 text-xl font-bold mb-6">سبد خرید شما خالی است.</p>
+            <a href="{% url 'product_list' %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 px-8 rounded-xl transition shadow-sm">
+                مشاهده محصولات فروشگاه
+            </a>
+        </div>
     {% endif %}
     
-    <div style="clear: both;"></div>
 </div>
 {% endblock %}

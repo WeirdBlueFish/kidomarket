@@ -1,26 +1,34 @@
 {% extends "products/base.html" %}
 
 {% block content %}
-<div style="max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">
-        🧾 رسید فاکتور #{{ order.id }}
-    </h2>
+<div class="max-w-2xl mx-auto mt-10 mb-20 bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-gray-100 pb-5 mb-8 gap-4">
+        <h2 class="text-2xl font-bold text-slate-800 m-0">🧾 رسید فاکتور #{{ order.id }}</h2>
+        <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-bold border border-blue-100 self-start sm:self-auto">سفارش ثبت شده</span>
+    </div>
     
-    <p><strong>نام خریدار:</strong> {{ order.first_name }} {{ order.last_name }}</p>
-    <p><strong>آدرس ارسال:</strong> {{ order.address }}</p>
+    <div class="bg-slate-50 p-6 rounded-xl border border-gray-100 mb-8 flex flex-col gap-3">
+        <p class="m-0 text-slate-700"><strong class="text-slate-800 ml-2">نام گیرنده:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+        <p class="m-0 text-slate-700 leading-relaxed"><strong class="text-slate-800 ml-2">آدرس ارسال:</strong> {{ order.address }}</p>
+    </div>
 
-    <h3 style="margin-top: 30px; color: #34495e;">👕 لباس‌های خریداری شده:</h3>
-    <ul style="list-style-type: none; padding: 0;">
+    <h3 class="text-xl font-bold text-slate-800 mb-5">👕 لباس‌های خریداری شده:</h3>
+    <ul class="list-none p-0 m-0 flex flex-col gap-3">
         {% for item in order.items.all %}
-            <li style="background: #f8f9fa; margin-bottom: 10px; padding: 15px; border-radius: 5px; border: 1px solid #ddd; display: flex; justify-content: space-between;">
-                <span><strong>{{ item.product.name }}</strong> ({{ item.quantity }} عدد)</span>
-                <span style="color: #e67e22; font-weight: bold;">{{ item.price }} تومان</span>
+            <li class="bg-white p-5 rounded-xl border border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3 hover:border-blue-300 transition duration-300">
+                <span class="text-slate-700 text-lg">
+                    <strong class="text-slate-800">{{ item.product.name }}</strong> 
+                    <span class="text-gray-500 text-sm mr-2">({{ item.quantity }} عدد)</span>
+                </span>
+                <span class="text-orange-600 font-bold text-lg whitespace-nowrap">{{ item.price }} تومان</span>
             </li>
         {% endfor %}
     </ul>
 
-    <div style="margin-top: 20px; text-align: center;">
-        <a href="{% url 'profile' %}" style="background: #95a5a6; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px;">بازگشت به پروفایل</a>
+    <div class="mt-10 text-center border-t-2 border-gray-50 pt-8">
+        <a href="{% url 'accounts:profile' %}" class="inline-block bg-slate-400 hover:bg-slate-500 text-white font-bold py-3 px-8 rounded-xl transition shadow-sm">
+            بازگشت به پروفایل
+        </a>
     </div>
 </div>
 {% endblock %}

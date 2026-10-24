@@ -1,56 +1,39 @@
 {% extends "products/base.html" %}
 
-{% block css %}
-<style>
-    h1 { text-align: center; color: #333; }
-    .product-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-    .product-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; width: 250px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .product-image { max-width: 100%; height: auto; border-radius: 5px; }
-    .price { color: #27ae60; font-weight: bold; font-size: 1.2em; }
-    .age-range { color: #7f8c8d; font-size: 0.9em; margin-bottom: 10px; }
-    .btn { background-color: #3498db; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block; }
-    .filters { text-align: center; margin-bottom: 30px; }
-    .filter-btn { padding: 10px 20px; margin: 0 5px; text-decoration: none; color: #333; background-color: #e0e0e0; border-radius: 20px; font-weight: bold; transition: 0.3s; }
-    .filter-btn:hover { background-color: #bdc3c7; }
-    .filter-btn.active { background-color: #9b59b6; color: white; }
-</style>
-{% endblock %}
-
 {% block content %}
-    <h1>محصولات فروشگاه ما</h1>
+    <h1 class="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-8 md:mb-12">محصولات فروشگاه ما</h1>
 
     <!-- باکس فیلترهای پیشرفته -->
-    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 800px; margin: 20px auto; text-align: center;">
-    
-    <form method="get" action="{% url 'product_list' %}" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;">
+    <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 max-w-4xl mx-auto mb-10">
+        <form method="get" action="{% url 'product_list' %}" class="flex flex-col md:flex-row items-center justify-center gap-4">
             
             <!-- باکس جستجو -->
-            <div>
-                <label style="font-weight: bold; color: #34495e;">جستجو:</label>
-                <input type="text" name="q" value="{{ current_search|default_if_none:'' }}" placeholder="مثلاً: تیشرت..." style="padding: 8px 15px; border-radius: 5px; border: 1px solid #bdc3c7; outline: none; font-family: inherit; width: 150px;">
+            <div class="w-full md:w-auto flex flex-col md:flex-row items-start md:items-center gap-2">
+                <label class="font-bold text-slate-700 text-sm whitespace-nowrap">جستجو:</label>
+                <input type="text" name="q" value="{{ current_search|default_if_none:'' }}" placeholder="مثلاً: تیشرت..." class="w-full md:w-48 p-2.5 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-0 outline-none font-sans text-sm transition">
             </div>
 
             <!-- منوی هوشمند دسته‌بندی‌ها -->
-            <div>
-                <label style="font-weight: bold; color: #34495e;">دسته‌بندی:</label>
-                <select name="category" style="padding: 8px 15px; border-radius: 5px; border: 1px solid #bdc3c7; outline: none; font-family: inherit; min-width: 200px;">
+            <div class="w-full md:w-auto flex flex-col md:flex-row items-start md:items-center gap-2">
+                <label class="font-bold text-slate-700 text-sm whitespace-nowrap">دسته‌بندی:</label>
+                <select name="category" class="w-full md:w-64 p-2.5 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-0 outline-none font-sans text-sm transition cursor-pointer bg-white">
                     <option value="">همه محصولات 🌈</option>
                     
                     {% for cat in categories %}
-                        <!-- دسته اصلی (مثلا: پسرانه) -->
-                        <option value="{{ cat.id }}" {% if current_category == cat.id|stringformat:"s" %}selected{% endif %} style="font-weight: bold; color: #2980b9;">
+                        <!-- دسته اصلی -->
+                        <option value="{{ cat.id }}" {% if current_category == cat.id|stringformat:"s" %}selected{% endif %} class="font-bold text-blue-700">
                             {{ cat.name }}
                         </option>
                         
                         {% for sub in cat.subcategories.all %}
-                            <!-- زیرشاخه سطح یک (مثلا: شلوار) -->
-                            <option value="{{ sub.id }}" {% if current_category == sub.id|stringformat:"s" %}selected{% endif %}>
+                            <!-- زیرشاخه سطح یک -->
+                            <option value="{{ sub.id }}" {% if current_category == sub.id|stringformat:"s" %}selected{% endif %} class="text-slate-800">
                                 &nbsp;&nbsp;&nbsp;-- {{ sub.name }}
                             </option>
                             
                             {% for subsub in sub.subcategories.all %}
-                                <!-- زیرشاخه سطح دو (مثلا: ۲ تا ۴ سال) -->
-                                <option value="{{ subsub.id }}" {% if current_category == subsub.id|stringformat:"s" %}selected{% endif %} style="color: #7f8c8d;">
+                                <!-- زیرشاخه سطح دو -->
+                                <option value="{{ subsub.id }}" {% if current_category == subsub.id|stringformat:"s" %}selected{% endif %} class="text-gray-500">
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---- {{ subsub.name }}
                                 </option>
                             {% endfor %}
@@ -62,56 +45,69 @@
             </div>
 
             <!-- دکمه‌ها -->
-            <div>
-                <button type="submit" style="background: #2ecc71; color: white; padding: 9px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 بگرد</button>
-                <a href="{% url 'product_list' %}" style="color: #e74c3c; text-decoration: none; margin-right: 10px; font-size: 0.9em; font-weight: bold;">✖ حذف فیلتر</a>
+            <div class="w-full md:w-auto flex items-center gap-3 mt-2 md:mt-0">
+                <button type="submit" class="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-sm">🔍 بگرد</button>
+                <a href="{% url 'product_list' %}" class="flex-1 md:flex-none text-center text-red-500 hover:text-red-700 font-bold text-sm transition">✖ حذف فیلتر</a>
             </div>
         </form>
     </div>
 
-    <div class="product-container">
+    <!-- گرید محصولات -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {% for product in products %}
-            <div class="product-card">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
-                    <p style="color: gray;">بدون تصویر</p>
-                {% endif %}
+            <div class="group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition duration-300 hover:-translate-y-1 flex flex-col">
+                
+                <!-- تصویر محصول -->
+                <div class="w-full h-64 overflow-hidden bg-slate-50 relative">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-slate-300 text-4xl">📷</div>
+                    {% endif %}
+                </div>
 
-                <h2>{{ product.name }}</h2>
-                <p class="age-range">مناسب برای: {{ product.min_age }} تا {{ product.max_age }} سال</p>
-                <p class="price">{{ product.price }} تومان</p>
-                <a href="{% url 'product_detail' product.id %}" class="btn">مشاهده جزئیات</a>
+                <!-- اطلاعات محصول -->
+                <div class="p-5 flex flex-col flex-grow">
+                    <h2 class="text-lg font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition line-clamp-1">{{ product.name }}</h2>
+                    <p class="text-sm text-gray-500 mb-4">مناسب برای: {{ product.min_age }} تا {{ product.max_age }} سال</p>
+                    <p class="text-xl font-bold text-emerald-600 mb-5 mt-auto">{{ product.price }} تومان</p>
+                    
+                    <a href="{% url 'product_detail' product.id %}" class="block w-full text-center bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white font-bold py-2.5 rounded-xl transition">مشاهده جزئیات</a>
+                </div>
             </div>
         {% empty %}
-            <p>در حال حاضر محصولی برای نمایش وجود ندارد.</p>
+            <div class="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-dashed border-gray-300">
+                <span class="text-4xl mb-4">🕵️‍♂️</span>
+                <p class="text-gray-500 text-lg font-bold">در حال حاضر محصولی برای نمایش وجود ندارد.</p>
+            </div>
         {% endfor %}
     </div>
+
     <!-- بخش دکمه‌های صفحه‌بندی -->
-        {% if products.has_other_pages %}
-        <div style="text-align: center; margin: 40px auto; padding: 20px; direction: rtl;">
-            
-            <!-- دکمه صفحه قبلی -->
-            {% if products.has_previous %}
-                <a href="?q={{ current_search|default_if_none:'' }}&category={{ current_category|default_if_none:'' }}&page={{ products.previous_page_number }}" 
-                style="padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px; font-weight: bold;">
-                    « صفحه قبلی
-                </a>
-            {% endif %}
-
-            <!-- نمایش شماره صفحه فعلی -->
-            <span style="font-weight: bold; padding: 10px 20px; background: #ecf0f1; border-radius: 5px; margin: 0 5px; color: #2c3e50;">
-                صفحه {{ products.number }} از {{ products.paginator.num_pages }}
-            </span>
-
-            <!-- دکمه صفحه بعدی -->
-            {% if products.has_next %}
-                <a href="?q={{ current_search|default_if_none:'' }}&category={{ current_category|default_if_none:'' }}&page={{ products.next_page_number }}" 
-                style="padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px; font-weight: bold;">
-                    صفحه بعدی »
-                </a>
-            {% endif %}
-            
-        </div>
+    {% if products.has_other_pages %}
+    <div class="flex flex-wrap justify-center items-center gap-3 mt-12 mb-8 direction-rtl">
+        
+        <!-- دکمه صفحه قبلی -->
+        {% if products.has_previous %}
+            <a href="?q={{ current_search|default_if_none:'' }}&category={{ current_category|default_if_none:'' }}&page={{ products.previous_page_number }}" 
+            class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition shadow-sm">
+                « صفحه قبلی
+            </a>
         {% endif %}
+
+        <!-- نمایش شماره صفحه فعلی -->
+        <span class="px-5 py-2.5 bg-slate-100 border border-gray-200 rounded-xl font-bold text-slate-700">
+            صفحه {{ products.number }} از {{ products.paginator.num_pages }}
+        </span>
+
+        <!-- دکمه صفحه بعدی -->
+        {% if products.has_next %}
+            <a href="?q={{ current_search|default_if_none:'' }}&category={{ current_category|default_if_none:'' }}&page={{ products.next_page_number }}" 
+            class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition shadow-sm">
+                صفحه بعدی »
+            </a>
+        {% endif %}
+        
+    </div>
+    {% endif %}
 {% endblock %}
