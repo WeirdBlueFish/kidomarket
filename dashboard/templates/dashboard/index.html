@@ -16,7 +16,7 @@
         </div>
         <div>
             <p class="text-sm font-bold text-gray-500 mb-1">درآمد این ماه</p>
-            <h3 class="text-xl font-bold text-slate-800">{{ total_income|default:"۱۲,۴۵۰,۰۰۰" }} <span class="text-sm font-normal text-gray-500">تومان</span></h3>
+            <h3 class="text-xl font-bold text-slate-800">{{ total_income|default:"۰" }} <span class="text-sm font-normal text-gray-500">تومان</span></h3>
         </div>
     </div>
 
@@ -27,7 +27,7 @@
         </div>
         <div>
             <p class="text-sm font-bold text-gray-500 mb-1">تعداد محصولات</p>
-            <h3 class="text-xl font-bold text-slate-800">{{ total_products|default:"۳۴۲" }} <span class="text-sm font-normal text-gray-500">عدد</span></h3>
+            <h3 class="text-xl font-bold text-slate-800">{{ total_products|default:"۰" }} <span class="text-sm font-normal text-gray-500">عدد</span></h3>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
         </div>
         <div>
             <p class="text-sm font-bold text-gray-500 mb-1">سفارشات دخترانه</p>
-            <h3 class="text-xl font-bold text-slate-800">{{ girl_orders|default:"۱۸۵" }} <span class="text-sm font-normal text-gray-500">سفارش</span></h3>
+            <h3 class="text-xl font-bold text-slate-800">{{ girl_orders|default:"۰" }} <span class="text-sm font-normal text-gray-500">سفارش</span></h3>
         </div>
     </div>
 
@@ -49,7 +49,7 @@
         </div>
         <div>
             <p class="text-sm font-bold text-gray-500 mb-1">سفارشات پسرانه</p>
-            <h3 class="text-xl font-bold text-slate-800">{{ boy_orders|default:"۱۴۲" }} <span class="text-sm font-normal text-gray-500">سفارش</span></h3>
+            <h3 class="text-xl font-bold text-slate-800">{{ boy_orders|default:"۰" }} <span class="text-sm font-normal text-gray-500">سفارش</span></h3>
         </div>
     </div>
 
@@ -71,51 +71,45 @@
         <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-100 pb-3">سفارشات اخیر</h3>
         
         <div class="flex flex-col gap-3 flex-1 overflow-y-auto">
-            <!-- ردیف نمونه اول -->
+            {% for order in recent_orders %}
             <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-gray-100">
                 <div>
-                    <strong class="text-blue-600 block text-sm">#۱۰۲۴</strong>
-                    <span class="text-xs text-gray-500">علی رضایی</span>
+                    <strong class="text-blue-600 block text-sm">#{{ order.id }}</strong>
+                    <span class="text-xs text-gray-500">{{ order.first_name }} {{ order.last_name }}</span>
                 </div>
                 <div class="text-left">
-                    <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-bold block mb-1 text-center">موفق</span>
-                    <span class="text-xs font-bold text-slate-700">۴۵۰,۰۰۰ ت</span>
+                    {% if order.paid %}
+                        <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-bold block mb-1 text-center">موفق</span>
+                    {% else %}
+                        <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold block mb-1 text-center">در انتظار</span>
+                    {% endif %}
+                    <span class="text-xs font-bold text-slate-700">{{ order.get_total_cost }} ت</span>
                 </div>
             </div>
-            
-            <!-- ردیف نمونه دوم -->
-            <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-gray-100">
-                <div>
-                    <strong class="text-blue-600 block text-sm">#۱۰۲۳</strong>
-                    <span class="text-xs text-gray-500">سارا احمدی</span>
-                </div>
-                <div class="text-left">
-                    <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold block mb-1 text-center">در انتظار</span>
-                    <span class="text-xs font-bold text-slate-700">۲۸۰,۰۰۰ ت</span>
-                </div>
-            </div>
+            {% empty %}
+            <p class="text-center text-gray-500 text-sm mt-4 font-bold">سفارشی ثبت نشده است.</p>
+            {% endfor %}
         </div>
         
-        <a href="#" class="block text-center mt-4 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white py-2 rounded-lg text-sm font-bold transition">مشاهده همه سفارشات ←</a>
+        <a href="{% url 'dashboard_order_list' %}" class="block text-center mt-4 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white py-2 rounded-lg text-sm font-bold transition">مشاهده همه سفارشات ←</a>
     </div>
 </div>
 
 <!-- اسکریپت راه‌اندازی Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // هماهنگ‌سازی فونت چارت با سایت
     Chart.defaults.font.family = 'Vazirmatn';
     
     const ctx = document.getElementById('salesChart').getContext('2d');
     const salesChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'],
+            labels: {{ days_labels|safe }},
             datasets: [
                 {
                     label: 'شعبه دخترانه',
-                    data: [12, 19, 15, 25, 22, 30, 28], // این دیتاها بعداً از بک‌اند تزریق میشن
-                    borderColor: '#ec4899', // Pink
+                    data: {{ girl_sales_data|safe }},
+                    borderColor: '#ec4899', 
                     backgroundColor: 'rgba(236, 72, 153, 0.1)',
                     tension: 0.4,
                     fill: true,
@@ -124,8 +118,8 @@
                 },
                 {
                     label: 'شعبه پسرانه',
-                    data: [10, 15, 12, 20, 18, 25, 20],
-                    borderColor: '#f97316', // Orange
+                    data: {{ boy_sales_data|safe }},
+                    borderColor: '#f97316', 
                     backgroundColor: 'rgba(249, 115, 22, 0.1)',
                     tension: 0.4,
                     fill: true,
@@ -142,7 +136,7 @@
                 tooltip: { titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' } }
             },
             scales: {
-                y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#f1f5f9' } },
+                y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { borderDash: [5, 5], color: '#f1f5f9' } },
                 x: { grid: { display: false } }
             }
         }

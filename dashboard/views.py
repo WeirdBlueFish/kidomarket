@@ -1,9 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
-from products.models import Products # ایمپورت کلاس محصولات شما
 from django.core.paginator import Paginator
+from orders.models import Order, OrderItem
+from products.models import Products 
 from django.db.models import Q
 from django import forms
+import json
+import datetime
+from django.utils import timezone
 
 @staff_member_required
 def dashboard_home(request):
@@ -135,3 +139,53 @@ def dashboard_order_detail(request, pk):
         'order': order,
     }
     return render(request, 'dashboard/order_detail.html', context)
+
+
+@staff_member_required
+def dashboard_home(request):
+    successful_orders = Order.objects.filter(paid=True)
+    total_income = sum(order.get_total_cost() for order in successful_orders)
+    total_products = Products.objects.count()
+    
+    boy_orders = OrderItem.objects.filter(order__paid=True, product__gender='boy').count()
+    girl_orders = OrderItem.objects.filter(order__paid=True, product__gender='girl').count()
+    
+    # ۵ سفارش اخیر
+    recent_orders = Order.objects.all().order_by('-created')[:5]
+
+    # محاسبه داده‌های نمودار برای ۷ روز گذشته
+    today = timezone.now().date()
+    persian_weekdays = {0: 'دوشنبه', 1: 'سه‌شنبه', 2: 'چهارشنبه', 3: 'پنجشنبه', 4: 'جمعه', 5: 'شنبه', 6: 'یکشنبه'}
+    
+    days_labels = []
+    girl_sales_data = []
+    boy_sales_data = []
+
+    for i in range(6, -1, -1):
+        target_day = today - datetime.timedelta(days=i)
+        days_labels.append(persian_weekdays[target_day.weekday()])
+        
+        girl_sales_data.append(OrderItem.objects.filter(
+            order__paid=True,
+            order__created__date=target_day,
+            product__gender='girl'
+        ).count())
+        
+        boy_sales_data.append(OrderItem.objects.filter(
+            order__paid=True,
+            order__created__date=target_day,
+            product__gender='boy'
+        ).count())
+
+    context = {
+        'total_income': f"{total_income:,}",
+        'total_products': total_products,
+        'boy_orders': boy_orders,
+        'girl_orders': girl_orders,
+        'recent_orders': recent_orders,
+        # ارسال داده‌ها به صورت JSON برای استفاده در جاوااسکریپت
+        'days_labels': json.dumps(days_labels),
+        'girl_sales_data': json.dumps(girl_sales_data),
+        'boy_sales_data': json.dumps(boy_sales_data),
+    }
+    return render(request, 'dashboard/index.html', context)
