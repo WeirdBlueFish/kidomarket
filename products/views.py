@@ -9,7 +9,10 @@ def product_list(request):
     products = Products.objects.filter(is_active=True)
 
     categories = Category.objects.filter(parent=None)
-
+    
+    gender = request.GET.get('gender')
+    if gender in ['boy', 'girl']:
+        products = products.filter(gender=gender)
 
     search_query = request.GET.get('q')
     category_id = request.GET.get('category')

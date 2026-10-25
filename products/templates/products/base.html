@@ -21,77 +21,98 @@
             }
         }
     </script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     {% block css %}{% endblock %}
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
-    <!-- شريط التنقل العلوي (Navbar) -->
-    <nav class="bg-slate-800 shadow-md sticky top-0 z-50">
+    <!-- نوار ناوبری اصلی سایت -->
+    <nav class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex justify-between items-center h-20">
                 
-                <!-- شعار الموقع -->
-                <div class="flex-shrink-0">
-                    <a href="{% url 'product_list' %}" class="text-white font-bold text-xl tracking-tight hover:text-gray-300 transition">🧸 فروشگاه کودک من</a>
+                <!-- بخش راست: دکمه منوی موبایل، لوگو و لینک‌های دسکتاپ -->
+                <div class="flex items-center gap-4 md:gap-8">
+                    
+                    <!-- دکمه همبرگری موبایل -->
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-emerald-500 text-2xl focus:outline-none transition">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <a href="/" class="text-xl md:text-2xl font-bold text-emerald-500 flex items-center gap-2">
+                        <span class="text-2xl md:text-3xl">🧸</span> کی‌دو مارکت
+                    </a>
+                    
+                    <!-- لینک‌های دسکتاپ (در موبایل مخفی هستند) -->
+                    <div class="hidden md:flex items-center gap-6">
+                        <a href="{% url 'product_list' %}" class="text-slate-600 hover:text-emerald-500 font-bold transition">فروشگاه</a>
+                        <!-- اگر برای فیلتر کردن از پارامتر در url استفاده می‌کنید می‌توانید لینک‌ها را تغییر دهید -->
+                        <a href="{% url 'product_list' %}?gender=girl" class="text-slate-600 hover:text-pink-500 font-bold transition">دخترانه</a>
+                        <a href="{% url 'product_list' %}?gender=boy" class="text-slate-600 hover:text-orange-500 font-bold transition">پسرانه</a>
+                    </div>
                 </div>
                 
-                <!-- روابط الشاشات الكبيرة (Desktop) -->
-                <div class="hidden md:flex items-center space-x-reverse space-x-6">
-                    
-                    <!-- قسم حساب المستخدم -->
-                    <div class="flex items-center space-x-reverse space-x-4 bg-slate-700 px-4 py-2 rounded-lg">
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'accounts:profile' %}" class="text-blue-300 hover:text-white text-sm font-bold transition">👤 پروفایل ({{ user.username }})</a>
-                            <a href="{% url 'accounts:logout' %}" class="text-red-400 hover:text-red-300 text-sm font-bold transition">خروج 🚪</a>
-                        {% else %}
-                            <a href="{% url 'accounts:login' %}" class="text-emerald-400 hover:text-emerald-300 text-sm font-bold transition">ورود 🔓</a>
-                            <a href="{% url 'accounts:register' %}" class="text-blue-400 hover:text-blue-300 text-sm font-bold transition">ثبت‌نام 📝</a>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- سلة المشتريات -->
-                    <a href="{% url 'cart_detail' %}" class="relative text-white hover:text-gray-300 transition flex items-center font-medium">
-                        سبد خرید 🛒
+                <!-- بخش چپ: سبد خرید و حساب کاربری -->
+                <div class="flex items-center gap-3 sm:gap-6">
+                    <a href="{% url 'cart_detail' %}" class="relative p-2 text-slate-600 hover:text-emerald-500 transition group">
+                        <i class="fa-solid fa-cart-shopping text-xl sm:text-2xl group-hover:scale-110 transition-transform"></i>
                         {% if cart|length > 0 %}
-                            <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">{{ cart|length }}</span>
+                            <span class="absolute top-0 right-0 -mt-1 -mr-2 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-red-500 border-2 border-white text-white text-[10px] sm:text-xs font-bold shadow-sm">
+                                {{ cart|length }}
+                            </span>
                         {% endif %}
                     </a>
-                </div>
-
-                <!-- زر القائمة للهواتف (Mobile Menu Button) -->
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 rounded-md p-2">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
+                    
+                    <div class="w-px h-8 bg-gray-200 hidden sm:block"></div>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="flex items-center gap-1 sm:gap-2">
+                            <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-gray-200 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl transition">
+                                <i class="fa-regular fa-user text-base sm:text-lg text-blue-500"></i>
+                                <span class="hidden sm:inline">{{ user.first_name|default:user.username }}</span>
+                            </a>
+                            <a href="{% url 'accounts:logout' %}" class="flex items-center justify-center text-xs sm:text-sm text-red-500 bg-red-50 hover:bg-red-500 hover:text-white px-3 py-2 sm:py-2.5 rounded-xl transition" title="خروج از حساب">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-base sm:text-lg"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="text-xs sm:text-sm font-bold text-white bg-blue-500 hover:bg-blue-600 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition shadow-sm">
+                            ورود <span class="hidden sm:inline">/ ثبت‌نام</span>
+                        </a>
+                    {% endif %}
+                    
                 </div>
             </div>
         </div>
 
-        <!-- القائمة المنسدلة للهواتف (Mobile Menu) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-slate-700 border-t border-slate-600">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="{% url 'cart_detail' %}" class="flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-600 transition">
-                    <span>سبد خرید 🛒</span>
-                    {% if cart|length > 0 %}
-                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{{ cart|length }}</span>
-                    {% endif %}
-                </a>
-                
-                <div class="border-t border-slate-600 my-2 pt-2"></div>
-                
-                {% if user.is_authenticated %}
-                    <a href="{% url 'accounts:profile' %}" class="block px-3 py-2 rounded-md text-base font-medium text-blue-300 hover:bg-slate-600 transition">👤 پروفایل ({{ user.username }})</a>
-                    <a href="{% url 'accounts:logout' %}" class="block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-slate-600 transition">خروج 🚪</a>
-                {% else %}
-                    <a href="{% url 'accounts:login' %}" class="block px-3 py-2 rounded-md text-base font-medium text-emerald-400 hover:bg-slate-600 transition">ورود 🔓</a>
-                    <a href="{% url 'accounts:register' %}" class="block px-3 py-2 rounded-md text-base font-medium text-blue-400 hover:bg-slate-600 transition">ثبت‌نام 📝</a>
-                {% endif %}
+        <!-- منوی کشویی موبایل (به صورت پیش‌فرض مخفی است) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-50 border-t border-gray-100">
+            <div class="flex flex-col px-4 pt-2 pb-4 space-y-2">
+                <a href="{% url 'product_list' %}" class="block px-3 py-2.5 rounded-lg text-sm font-bold text-slate-700 hover:text-emerald-500 hover:bg-white border border-transparent hover:border-emerald-100 transition">🛍️ فروشگاه</a>
+                <a href="{% url 'product_list' %}?gender=girl" class="block px-3 py-2.5 rounded-lg text-sm font-bold text-slate-700 hover:text-pink-500 hover:bg-white border border-transparent hover:border-pink-100 transition">👧 دخترانه</a>
+                <a href="{% url 'product_list' %}?gender=boy" class="block px-3 py-2.5 rounded-lg text-sm font-bold text-slate-700 hover:text-orange-500 hover:bg-white border border-transparent hover:border-orange-100 transition">👦 پسرانه</a>
             </div>
         </div>
     </nav>
+
+    <!-- اسکریپت باز و بسته کردن منوی موبایل -->
+    <script>
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = this.querySelector('i');
+            
+            menu.classList.toggle('hidden');
+            
+            // تغییر آیکون همبرگری به ضربدر هنگام باز شدن
+            if (menu.classList.contains('hidden')) {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            }
+        });
+    </script>
 
     <!-- محتوى الصفحات الديناميكي -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
