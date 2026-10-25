@@ -97,3 +97,41 @@ def dashboard_product_delete(request, pk):
         product.delete()
         return redirect('dashboard_product_list')
     return render(request, 'dashboard/product_confirm_delete.html', {'product': product})
+
+# ایمپورت مدل سفارشات (مسیر را بر اساس نام اپلیکیشن سفارشات خود تنظیم کنید)
+from orders.models import Order 
+
+@staff_member_required
+def dashboard_order_list(request):
+    # دریافت تمامی سفارشات، از جدیدترین به قدیمی‌ترین
+    orders_list = Order.objects.all().order_by('-created')
+    
+    # صفحه‌بندی (۱۵ سفارش در هر صفحه)
+    paginator = Paginator(orders_list, 15)
+    page_number = request.GET.get('page')
+    orders = paginator.get_page(page_number)
+    
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'dashboard/order_list.html', context)
+
+
+@staff_member_required
+def dashboard_order_detail(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    
+    # اگر مدیر وضعیت سفارش را تغییر داد و دکمه ثبت را زد
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        # فرض می‌کنیم فیلدی به نام status یا شبیه به آن در مدل Order دارید
+        # در غیر این صورت می‌توانید به جای status از فیلدهای موجود خودتان استفاده کنید
+        if hasattr(order, 'status'): 
+            order.status = new_status
+            order.save()
+        return redirect('dashboard_order_detail', pk=order.id)
+        
+    context = {
+        'order': order,
+    }
+    return render(request, 'dashboard/order_detail.html', context)
