@@ -1,0 +1,73 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">مدیریت کاربران</h2>
+        <p class="text-gray-500 mt-1 text-sm font-bold">لیست تمامی مشتریان و مدیران ثبت‌نام شده در سایت</p>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-right whitespace-nowrap">
+            <thead class="bg-slate-50 text-slate-600 border-b border-gray-200">
+                <tr>
+                    <th class="p-4 font-bold text-sm">نام کاربری</th>
+                    <th class="p-4 font-bold text-sm">نام و نام خانوادگی</th>
+                    <th class="p-4 font-bold text-sm">ایمیل</th>
+                    <th class="p-4 font-bold text-sm">تاریخ عضویت</th>
+                    <th class="p-4 font-bold text-sm">سطح دسترسی</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for user in users %}
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="p-4">
+                            <strong class="text-blue-600 block">{{ user.username }}</strong>
+                        </td>
+                        <td class="p-4 text-slate-800 font-bold text-sm">
+                            {{ user.first_name }} {{ user.last_name }}
+                            {% if not user.first_name and not user.last_name %}
+                                <span class="text-gray-400">ثبت نشده</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 text-gray-500 text-sm">
+                            {{ user.email|default:"-" }}
+                        </td>
+                        <td class="p-4 text-gray-600 font-bold text-sm">
+                            {{ user.date_joined|date:"Y/m/d" }}
+                        </td>
+                        <td class="p-4">
+                            {% if user.is_superuser %}
+                                <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">مدیر کل</span>
+                            {% elif user.is_staff %}
+                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">کارمند</span>
+                            {% else %}
+                                <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">مشتری عادی</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-8 text-center text-gray-500 font-bold">هیچ کاربری یافت نشد.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- صفحه‌بندی -->
+{% if users.has_other_pages %}
+<div class="flex justify-center gap-2 mt-6">
+    {% if users.has_previous %}
+        <a href="?page={{ users.previous_page_number }}" class="px-4 py-2 bg-white border border-gray-200 text-slate-700 rounded-lg hover:bg-slate-50 font-bold transition">قبلی</a>
+    {% endif %}
+    <span class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold">{{ users.number }}</span>
+    {% if users.has_next %}
+        <a href="?page={{ users.next_page_number }}" class="px-4 py-2 bg-white border border-gray-200 text-slate-700 rounded-lg hover:bg-slate-50 font-bold transition">بعدی</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

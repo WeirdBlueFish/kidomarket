@@ -3,6 +3,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
 from orders.models import Order, OrderItem
 from products.models import Products 
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django import forms
 import json
@@ -189,3 +190,19 @@ def dashboard_home(request):
         'boy_sales_data': json.dumps(boy_sales_data),
     }
     return render(request, 'dashboard/index.html', context)
+
+
+@staff_member_required
+def dashboard_user_list(request):
+    # دریافت همه کاربران، جدیدترین‌ها در ابتدا
+    users_list = User.objects.all().order_by('-date_joined')
+    
+    # صفحه‌بندی (۱۵ کاربر در هر صفحه)
+    paginator = Paginator(users_list, 15)
+    page_number = request.GET.get('page')
+    users = paginator.get_page(page_number)
+    
+    context = {
+        'users': users,
+    }
+    return render(request, 'dashboard/user_list.html', context)
