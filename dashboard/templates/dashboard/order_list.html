@@ -32,7 +32,7 @@
                             <span class="text-xs text-gray-500">{{ order.phone|default:"-" }}</span>
                         </td>
                         <td class="p-4 text-gray-600 font-bold text-sm">
-                            {{ order.created|date:"Y/m/d" }}
+                            {{ order.get_jalali }}
                         </td>
                         <td class="p-4">
                             {% if order.paid %}

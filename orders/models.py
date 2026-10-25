@@ -25,12 +25,18 @@ class Order(models.Model):
 
     get_jalali.short_description = "تاریخ ثبت (شمسی)"
 
+    def get_total_cost(self):
+        return sum(item.get_cost() for item in self.items.all())
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Products, related_name='order_items', on_delete=models.CASCADE)
     price = models.PositiveIntegerField(verbose_name="قیمت")
     quantity = models.PositiveIntegerField(default=1, verbose_name="تعداد")
     product_size = models.ForeignKey(ProductSize, on_delete=models.SET_NULL, null=True, verbose_name="سایز انتخابی")
+
+    def get_cost(self):
+        return self.quantity * self.price
 
     def __str__(self):
         return str(self.id)
