@@ -1,225 +1,306 @@
 {% extends "products/base.html" %}
 
 {% block content %}
-<a href="{% url 'product_list' %}" class="inline-block mt-4 mb-6 text-gray-500 hover:text-slate-800 font-bold transition">⟵ بازگشت به فروشگاه</a>
-
-<!-- کانتینر اصلی اطلاعات محصول -->
-<div class="bg-white max-w-5xl mx-auto p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-8 mb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
     
-    <!-- بخش تصویر -->
-    <div class="w-full md:w-1/2 lg:w-2/5 shrink-0">
-        {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full rounded-xl object-cover shadow-sm">
-        {% else %}
-            <div class="w-full h-80 md:h-96 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-lg">
-                بدون تصویر 📷
-            </div>
-        {% endif %}
-    </div>
-    
-    <!-- بخش اطلاعات اصلی -->
-    <div class="w-full md:w-1/2 lg:w-3/5 flex flex-col">
-        <h1 class="text-2xl md:text-3xl font-bold text-slate-800 mb-4">{{ product.name }}</h1>
-        
-        <div class="mb-5 text-yellow-500 text-lg font-bold flex items-center gap-2">
-            {% if comments_count > 0 %}
-                <span>⭐ {{ avg_rating }}</span>
-                <span class="text-gray-500 text-sm font-normal">
-                    (از {{ comments_count }} رای ثبت شده)
-                </span>
-            {% else %}
-                <span class="text-slate-400 text-sm font-normal">
-                    ⭐ هنوز امتیازی ثبت نشده
-                </span>
-            {% endif %}
+    <!-- مسیر راهنما (Breadcrumb) و دکمه بازگشت -->
+    <nav class="flex justify-between items-center text-sm text-gray-500 mb-8 font-bold">
+        <div class="flex items-center">
+            <a href="/" class="hover:text-blue-600 transition">خانه</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'product_list' %}" class="hover:text-blue-600 transition">فروشگاه</a>
+            <span class="mx-2">/</span>
+            <span class="text-slate-800">{{ product.name }}</span>
         </div>
+        <a href="{% url 'product_list' %}" class="text-gray-500 hover:text-slate-800 font-bold transition flex items-center gap-2">
+            بازگشت به فروشگاه ⮌
+        </a>
+    </nav>
+
+    <!-- کانتینر اصلی اطلاعات محصول -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mb-16">
         
-        <div class="flex flex-wrap gap-3 mb-6">
-            <span class="bg-yellow-100 text-orange-600 px-4 py-1.5 rounded-full text-sm font-bold">
-                {% if product.gender == 'boy' %}پسرونه 👦🏻{% elif product.gender == 'girl' %}دخترونه 👧🏻{% else %}اسپرت 👕{% endif %}
-            </span>
-            <span class="bg-red-100 text-red-600 px-4 py-1.5 rounded-full text-sm font-bold">رده سنی: {{ product.min_age }} تا {{ product.max_age }} سال</span>
-        </div>
-        
-        {% if product.description %}
-        <div class="bg-slate-50 p-5 rounded-xl border-r-4 border-blue-500 text-gray-700 leading-relaxed mb-6">
-            <h4 class="m-0 mb-3 text-blue-700 font-bold">توضیحات:</h4>
-            {{ product.description|linebreaks }}
-        </div>
-        {% endif %}
-        
-        <!-- سیستم پیشنهاد هوشمند سایز -->
-        {% if user.is_authenticated and children %}
-        <div class="bg-blue-50 border border-blue-200 p-5 rounded-xl mb-6">
-            <h4 class="mt-0 mb-2 text-blue-700 font-bold text-lg">🤖 پیشنهاد هوشمند سایز کی‌دو مارکت</h4>
-            <p class="text-sm text-gray-600 mb-3">برای کدام فرزند خرید می‌کنید؟</p>
-            
-            <select id="child-selector" class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-0 font-sans mb-2">
-                <option value="">یک فرزند را انتخاب کنید...</option>
-                {% for child in children %}
-                    <option value="{{ child.height|default:0 }}">{{ child.name }} (قد: {{ child.height|default:"نامشخص" }} سانتی‌متر)</option>
-                {% endfor %}
-            </select>
-            
-            <div id="size-result" class="text-lg font-bold text-emerald-600 mt-2"></div>
-        </div>
-        
-        <script>
-            const availableSizes = [
-                {% for size in product.sizes.all %}
-                    {% if size.min_height and size.max_height %}
-                    { id: "{{ size.id }}", name: "{{ size.name }}", min: {{ size.min_height }}, max: {{ size.max_height }} },
-                    {% endif %}
-                {% endfor %}
-            ];
-
-            document.getElementById('child-selector').addEventListener('change', function() {
-                const childHeight = parseInt(this.value);
-                let resultDiv = document.getElementById('size-result');
-                const sizeSelectDropdown = document.getElementById('size-select');
-                
-                if (isNaN(childHeight) || childHeight === 0) {
-                    resultDiv.innerHTML = "⚠️ برای پیشنهاد سایز، ابتدا قد فرزند را در پروفایل تکمیل کنید.";
-                    resultDiv.className = "text-lg font-bold text-orange-500 mt-2";
-                    return;
-                }
-
-                let bestFit = null;
-                for (let size of availableSizes) {
-                    if (childHeight >= size.min && childHeight <= size.max) {
-                        bestFit = size;
-                        break;
-                    }
-                }
-
-                if (bestFit) {
-                    resultDiv.innerHTML = "✅ پیشنهاد سیستم: <span>" + bestFit.name + "</span> (به صورت خودکار انتخاب شد)";
-                    resultDiv.className = "text-lg font-bold text-emerald-600 mt-2";
-                    sizeSelectDropdown.value = bestFit.id;
-                    updateProductUI();
-                } else {
-                    resultDiv.innerHTML = "❌ متاسفانه سایز مناسبی برای این قد در این مدل موجود نیست.";
-                    resultDiv.className = "text-lg font-bold text-red-600 mt-2";
-                    sizeSelectDropdown.value = "";
-                    updateProductUI();
-                }
-            });
-        </script>
-        {% endif %}
-
-        <!-- فرم هوشمند سبد خرید -->
-        <form action="{% url 'cart_add' product.id %}" method="post" class="mt-auto">
-            {% csrf_token %}
-            <input type="hidden" name="quantity" value="1">
-            
-            <label class="block font-bold text-slate-700 mb-2" for="size-select">📏 انتخاب سایز:</label>
-            <select name="size_id" id="size-select" onchange="updateProductUI()" required class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition cursor-pointer font-sans">
-                <option value="">-- برای مشاهده قیمت و موجودی، یک سایز انتخاب کنید --</option>
-                {% for size in product.sizes.all %}
-                    <option value="{{ size.id }}" 
-                            data-price="{{ size.price }}" 
-                            data-stock="{{ size.stock }}" 
-                            data-features="{{ size.features|default:'بدون ویژگی خاص'|escapejs }}">
-                        {{ size.name }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <!-- باکس اطلاعات داینامیک -->
-            <div id="dynamic-info" class="hidden bg-slate-50 p-5 rounded-xl border border-gray-200 mt-6">
-                <h2 id="display-price" class="text-orange-600 text-2xl font-bold mb-2"></h2>
-                <p id="display-stock" class="text-lg mb-4"></p>
-                
-                <h4 class="text-slate-700 font-bold mb-3">ویژگی‌های این سایز:</h4>
-                <div id="display-features" class="flex flex-wrap gap-2"></div>
-            </div>
-
-            <button type="submit" id="buy-btn" disabled class="w-full mt-6 py-4 rounded-xl font-bold text-lg text-white bg-slate-400 transition flex items-center justify-center gap-2 cursor-not-allowed">
-                ابتدا سایز را انتخاب کنید
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- نظرات کاربران -->
-<div class="bg-white max-w-5xl mx-auto p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-5 mb-8">
-    <h3 class="text-2xl font-bold text-slate-800 border-b-2 border-gray-100 pb-4 m-0">نظرات کاربران</h3>
-    
-    {% for comment in comments %}
-        <div class="bg-slate-50 p-5 rounded-xl border-r-4 border-blue-500">
-            <strong class="text-blue-700 text-lg">{{ comment.name }}</strong>
-            <span class="mr-3 text-lg">
-                {% if comment.rating == 5 %}⭐⭐⭐⭐⭐
-                {% elif comment.rating == 4 %}⭐⭐⭐⭐
-                {% elif comment.rating == 3 %}⭐⭐⭐
-                {% elif comment.rating == 2 %}⭐⭐
-                {% elif comment.rating == 1 %}⭐
+        <!-- ستون سمت راست: تصویر محصول -->
+        <div class="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm sticky top-28">
+            <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-slate-50 relative">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover object-center hover:scale-105 transition duration-500">
+                {% else %}
+                    <div class="w-full h-full flex flex-col items-center justify-center text-slate-300">
+                        <i class="fa-solid fa-image text-7xl mb-4"></i>
+                        <span class="font-bold">تصویری موجود نیست 📷</span>
+                    </div>
                 {% endif %}
-            </span>
-            <span class="text-gray-500 text-sm mr-3">{{ comment.created|date:"Y/m/d" }}</span>
-            <p class="mt-3 text-slate-700 leading-relaxed">{{ comment.body|linebreaks }}</p>
-        </div>
-    {% empty %}
-        <p class="text-gray-500">هنوز نظری برای این لباس ثبت نشده است. اولین نفر باشید!</p>
-    {% endfor %}
-
-    {% if comments.has_other_pages %}
-    <div class="flex justify-center items-center gap-4 my-6">
-        {% if comments.has_previous %}
-            <a href="?page={{ comments.previous_page_number }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-bold transition">صفحه قبلی</a>
-        {% endif %}
-        <span class="text-gray-600 font-bold">صفحه {{ comments.number }} از {{ comments.paginator.num_pages }}</span>
-        {% if comments.has_next %}
-            <a href="?page={{ comments.next_page_number }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-bold transition">صفحه بعدی</a>
-        {% endif %}
-    </div>
-    {% endif %}
-    
-    <h4 class="mt-6 text-xl font-bold text-slate-800">ثبت نظر جدید</h4>
-    
-    {% if request.user.is_authenticated %}
-        <form method="post" class="flex flex-col gap-4">
-            {% csrf_token %}
-            <select name="rating" required class="p-3 rounded-lg border border-gray-300 w-full font-sans focus:border-blue-500 focus:outline-none">
-                <option value="5">⭐⭐⭐⭐⭐ (عالی)</option>
-                <option value="4">⭐⭐⭐⭐ (خوب)</option>
-                <option value="3">⭐⭐⭐ (متوسط)</option>
-                <option value="2">⭐⭐ (ضعیف)</option>
-                <option value="1">⭐ (خیلی بد)</option>
-            </select>
-            <textarea name="body" rows="4" placeholder="نظر خود را بنویسید..." required class="p-3 rounded-lg border border-gray-300 w-full resize-y focus:border-blue-500 focus:outline-none"></textarea>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition self-start">ارسال نظر</button>
-        </form>
-        <p class="text-sm text-gray-500 mt-2">نظر شما پس از تایید با نام <strong class="text-slate-700">{{ request.user.username }}</strong> نمایش داده می‌شود.</p>
-    {% else %}
-        <div class="bg-orange-50 p-4 rounded-xl border border-orange-200 text-center">
-            <p class="text-orange-600 font-bold m-0">برای ثبت نظر باید وارد حساب کاربری خود شوید.</p>
-        </div>
-    {% endif %}
-</div>
-
-<!-- محصولات مشابه -->
-{% if similar_products %}
-<div class="bg-white max-w-5xl mx-auto p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 mb-12">
-    <h3 class="text-2xl font-bold text-slate-800 border-b-2 border-gray-100 pb-4 mb-6">شاید از این لباس‌ها هم خوشتان بیاید</h3>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-        {% for similar in similar_products %}
-            <div class="group text-center p-3 transition duration-300 hover:-translate-y-1">
-                <a href="{% url 'product_detail' similar.id %}" class="block">
-                    {% if similar.image %}
-                        <img src="{{ similar.image.url }}" alt="{{ similar.name }}" class="w-full h-48 md:h-56 object-cover rounded-xl shadow-sm group-hover:shadow-md transition">
-                    {% else %}
-                        <div class="w-full h-48 md:h-56 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-2xl group-hover:shadow-md transition">📷</div>
-                    {% endif %}
-                    <h4 class="mt-4 mb-1 text-slate-700 font-bold group-hover:text-blue-600 transition">{{ similar.name }}</h4>
-                </a>
+                
+                <!-- نشانگر شناور روی عکس -->
+                <div class="absolute top-4 right-4 flex flex-col gap-2">
+                    <span class="bg-white/90 backdrop-blur text-slate-700 px-3 py-1.5 rounded-xl text-sm font-bold shadow-sm">
+                        {{ product.min_age }} تا {{ product.max_age }} سال
+                    </span>
+                    <span class="px-3 py-1.5 rounded-xl text-sm font-bold shadow-sm text-center {% if product.gender == 'boy' %}bg-orange-100 text-orange-600 border border-orange-200{% elif product.gender == 'girl' %}bg-pink-100 text-pink-600 border border-pink-200{% else %}bg-purple-100 text-purple-600 border border-purple-200{% endif %}">
+                        {% if product.gender == 'boy' %}پسرونه 👦🏻{% elif product.gender == 'girl' %}دخترونه 👧🏻{% else %}اسپرت 👕{% endif %}
+                    </span>
+                </div>
             </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
+        </div>
 
+        <!-- ستون سمت چپ: اطلاعات و فرم خرید -->
+        <div class="flex flex-col">
+            
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4 leading-tight">{{ product.name }}</h1>
+            
+            <!-- امتیاز و نظرات -->
+            <div class="mb-5 text-yellow-500 text-lg font-bold flex items-center gap-2">
+                {% if comments_count > 0 %}
+                    <span>⭐ {{ avg_rating }}</span>
+                    <span class="text-gray-500 text-sm font-normal">
+                        (از {{ comments_count }} رای ثبت شده)
+                    </span>
+                {% else %}
+                    <span class="text-slate-400 text-sm font-normal">
+                        ⭐ هنوز امتیازی ثبت نشده
+                    </span>
+                {% endif %}
+            </div>
+            
+            {% if product.description %}
+            <div class="bg-slate-50 p-5 rounded-xl border-r-4 border-blue-500 text-gray-700 leading-relaxed mb-6 text-sm text-justify">
+                <h4 class="m-0 mb-3 text-blue-700 font-bold"><i class="fa-solid fa-circle-info"></i> توضیحات:</h4>
+                {{ product.description|linebreaks }}
+            </div>
+            {% endif %}
+            
+            <!-- سیستم پیشنهاد هوشمند سایز -->
+            {% if user.is_authenticated and children %}
+            <div class="bg-blue-50 border border-blue-200 p-5 rounded-xl mb-6">
+                <h4 class="mt-0 mb-3 text-blue-700 font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-robot"></i> پیشنهاد هوشمند سایز کی‌دو مارکت
+                </h4>
+                <p class="text-sm text-gray-600 mb-3 font-bold">برای کدام فرزند خرید می‌کنید؟</p>
+                
+                <select id="child-selector" class="w-full p-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-0 font-sans mb-2 outline-none">
+                    <option value="">یک فرزند را انتخاب کنید...</option>
+                    {% for child in children %}
+                        <option value="{{ child.height|default:0 }}">{{ child.name }} (قد: {{ child.height|default:"نامشخص" }} سانتی‌متر)</option>
+                    {% endfor %}
+                </select>
+                
+                <div id="size-result" class="text-base font-bold text-emerald-600 mt-2 transition-all"></div>
+            </div>
+            {% endif %}
+
+            <!-- فرم هوشمند سبد خرید -->
+            <form action="{% url 'cart_add' product.id %}" method="post" class="mt-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                {% csrf_token %}
+                
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <!-- انتخاب سایز -->
+                    <div class="flex-1">
+                        <label class="block font-bold text-slate-700 mb-2" for="size-select">📏 انتخاب سایز:</label>
+                        <select name="size_id" id="size-select" onchange="updateProductUI()" required class="w-full p-3.5 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition cursor-pointer font-sans bg-slate-50">
+                            <option value="">-- یک سایز انتخاب کنید --</option>
+                            {% for size in product.sizes.all %}
+                                <option value="{{ size.id }}" 
+                                        data-price="{{ size.price }}" 
+                                        data-stock="{{ size.stock }}" 
+                                        data-features="{{ size.features|default:'بدون ویژگی خاص'|escapejs }}">
+                                    {{ size.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- انتخاب تعداد -->
+                    <div class="w-full sm:w-28">
+                        <label for="quantity" class="block font-bold text-slate-700 mb-2">تعداد:</label>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" 
+                            class="w-full p-3.5 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none text-center font-bold text-slate-800 transition bg-slate-50">
+                    </div>
+                </div>
+
+                <!-- باکس اطلاعات داینامیک -->
+                <div id="dynamic-info" class="hidden bg-slate-50 p-5 rounded-xl border border-gray-200 mb-2">
+                    <h2 id="display-price" class="text-emerald-600 text-3xl font-bold mb-2"></h2>
+                    <p id="display-stock" class="text-base mb-4"></p>
+                    
+                    <h4 class="text-slate-700 font-bold mb-3 text-sm">ویژگی‌های این سایز:</h4>
+                    <div id="display-features" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <button type="submit" id="buy-btn" disabled class="w-full mt-4 py-4 rounded-xl font-bold text-lg text-white bg-slate-400 transition flex items-center justify-center gap-2 cursor-not-allowed">
+                    ابتدا سایز را انتخاب کنید
+                </button>
+            </form>
+
+            <!-- مزایای خرید (اعتمادسازی) -->
+            <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-100">
+                <div class="text-center bg-emerald-50 py-3 rounded-xl">
+                    <i class="fa-solid fa-truck-fast text-2xl text-emerald-500 mb-2"></i>
+                    <span class="block text-xs font-bold text-emerald-700">ارسال سریع</span>
+                </div>
+                <div class="text-center bg-blue-50 py-3 rounded-xl">
+                    <i class="fa-solid fa-shield-halved text-2xl text-blue-500 mb-2"></i>
+                    <span class="block text-xs font-bold text-blue-700">ضمانت کیفیت</span>
+                </div>
+                <div class="text-center bg-orange-50 py-3 rounded-xl">
+                    <i class="fa-solid fa-headset text-2xl text-orange-500 mb-2"></i>
+                    <span class="block text-xs font-bold text-orange-700">پشتیبانی آنلاین</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- بخش نظرات کاربران -->
+    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 mb-12">
+        <h3 class="text-2xl font-bold text-slate-800 border-b border-gray-100 pb-4 mb-6 flex items-center gap-3">
+            <i class="fa-regular fa-comments text-blue-500"></i> نظرات کاربران
+        </h3>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <!-- لیست نظرات -->
+            <div class="lg:col-span-2 flex flex-col gap-5">
+                {% for comment in comments %}
+                    <div class="bg-slate-50 p-5 rounded-2xl border-r-4 border-blue-500">
+                        <div class="flex justify-between items-center mb-2">
+                            <strong class="text-blue-700 text-lg">{{ comment.name }}</strong>
+                            <span class="text-gray-400 text-sm">{{ comment.created|date:"Y/m/d" }}</span>
+                        </div>
+                        <div class="mb-3 text-lg">
+                            {% if comment.rating == 5 %}⭐⭐⭐⭐⭐
+                            {% elif comment.rating == 4 %}⭐⭐⭐⭐
+                            {% elif comment.rating == 3 %}⭐⭐⭐
+                            {% elif comment.rating == 2 %}⭐⭐
+                            {% elif comment.rating == 1 %}⭐
+                            {% endif %}
+                        </div>
+                        <p class="text-slate-600 leading-relaxed text-sm">{{ comment.body|linebreaks }}</p>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-gray-300">
+                        <i class="fa-regular fa-comment-dots text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 font-bold">هنوز نظری برای این لباس ثبت نشده است. اولین نفر باشید!</p>
+                    </div>
+                {% endfor %}
+
+                <!-- صفحه‌بندی نظرات -->
+                {% if comments.has_other_pages %}
+                <div class="flex justify-center items-center gap-2 mt-4">
+                    {% if comments.has_previous %}
+                        <a href="?page={{ comments.previous_page_number }}" class="px-4 py-2 bg-white border border-gray-200 text-slate-700 rounded-lg hover:bg-slate-50 font-bold transition">قبلی</a>
+                    {% endif %}
+                    <span class="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold">{{ comments.number }}</span>
+                    {% if comments.has_next %}
+                        <a href="?page={{ comments.next_page_number }}" class="px-4 py-2 bg-white border border-gray-200 text-slate-700 rounded-lg hover:bg-slate-50 font-bold transition">بعدی</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- فرم ثبت نظر -->
+            <div class="bg-slate-50 p-6 rounded-2xl border border-gray-100 h-fit sticky top-28">
+                <h4 class="text-lg font-bold text-slate-800 mb-4">ثبت نظر جدید</h4>
+                {% if request.user.is_authenticated %}
+                    <form method="post" class="flex flex-col gap-4">
+                        {% csrf_token %}
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">امتیاز شما:</label>
+                            <select name="rating" required class="p-3 rounded-xl border border-gray-300 w-full font-sans focus:border-blue-500 focus:outline-none bg-white">
+                                <option value="5">⭐⭐⭐⭐⭐ (عالی)</option>
+                                <option value="4">⭐⭐⭐⭐ (خوب)</option>
+                                <option value="3">⭐⭐⭐ (متوسط)</option>
+                                <option value="2">⭐⭐ (ضعیف)</option>
+                                <option value="1">⭐ (خیلی بد)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">متن نظر:</label>
+                            <textarea name="body" rows="4" placeholder="نظر خود را درباره کیفیت و سایز بنویسید..." required class="p-3 rounded-xl border border-gray-300 w-full resize-y focus:border-blue-500 focus:outline-none bg-white"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition shadow-sm">ارسال نظر</button>
+                    </form>
+                    <p class="text-xs text-gray-500 mt-4 text-center">تایید با نام کاربری: <strong class="text-slate-700">{{ request.user.username }}</strong></p>
+                {% else %}
+                    <div class="bg-orange-50 p-4 rounded-xl border border-orange-200 text-center">
+                        <p class="text-orange-600 font-bold text-sm mb-3">برای ثبت نظر باید وارد حساب کاربری خود شوید.</p>
+                        <a href="{% url 'accounts:login' %}" class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition text-sm">ورود به حساب</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- محصولات مشابه -->
+    {% if similar_products %}
+    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
+        <h3 class="text-2xl font-bold text-slate-800 border-b border-gray-100 pb-4 mb-6">شاید از این لباس‌ها هم خوشتان بیاید</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {% for similar in similar_products %}
+                <div class="group text-center transition duration-300">
+                    <a href="{% url 'product_detail' similar.id %}" class="block">
+                        <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-slate-50 mb-3 relative">
+                            {% if similar.image %}
+                                <img src="{{ similar.image.url }}" alt="{{ similar.name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-slate-300 text-3xl">📷</div>
+                            {% endif %}
+                        </div>
+                        <h4 class="text-slate-700 font-bold group-hover:text-blue-600 transition line-clamp-1 text-sm md:text-base">{{ similar.name }}</h4>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- اسکریپت‌های مربوط به سایز هوشمند و فرم -->
 <script>
+    // اسکریپت پیشنهاد هوشمند سایز
+    {% if user.is_authenticated and children %}
+    const availableSizes = [
+        {% for size in product.sizes.all %}
+            {% if size.min_height and size.max_height %}
+            { id: "{{ size.id }}", name: "{{ size.name }}", min: {{ size.min_height }}, max: {{ size.max_height }} },
+            {% endif %}
+        {% endfor %}
+    ];
+
+    document.getElementById('child-selector').addEventListener('change', function() {
+        const childHeight = parseInt(this.value);
+        let resultDiv = document.getElementById('size-result');
+        const sizeSelectDropdown = document.getElementById('size-select');
+        
+        if (isNaN(childHeight) || childHeight === 0) {
+            resultDiv.innerHTML = "⚠️ برای پیشنهاد سایز، ابتدا قد فرزند را در پروفایل تکمیل کنید.";
+            resultDiv.className = "text-sm font-bold text-orange-500 mt-2";
+            return;
+        }
+
+        let bestFit = null;
+        for (let size of availableSizes) {
+            if (childHeight >= size.min && childHeight <= size.max) {
+                bestFit = size;
+                break;
+            }
+        }
+
+        if (bestFit) {
+            resultDiv.innerHTML = "✅ پیشنهاد سیستم: <span>" + bestFit.name + "</span> (به صورت خودکار انتخاب شد)";
+            resultDiv.className = "text-sm font-bold text-emerald-600 mt-2";
+            sizeSelectDropdown.value = bestFit.id;
+            updateProductUI();
+        } else {
+            resultDiv.innerHTML = "❌ متاسفانه سایز مناسبی برای این قد در این مدل موجود نیست.";
+            resultDiv.className = "text-sm font-bold text-red-600 mt-2";
+            sizeSelectDropdown.value = "";
+            updateProductUI();
+        }
+    });
+    {% endif %}
+
+    // اسکریپت آپدیت قیمت و موجودی بر اساس انتخاب کاربر
     function updateProductUI() {
         const select = document.getElementById("size-select");
         const selectedOption = select.options[select.selectedIndex];
@@ -230,7 +311,7 @@
         if (select.value === "") {
             infoBox.classList.add("hidden");
             btn.disabled = true;
-            btn.className = "w-full mt-6 py-4 rounded-xl font-bold text-lg text-white bg-slate-400 transition flex items-center justify-center gap-2 cursor-not-allowed";
+            btn.className = "w-full mt-4 py-4 rounded-xl font-bold text-lg text-white bg-slate-400 transition flex items-center justify-center gap-2 cursor-not-allowed";
             btn.innerText = "ابتدا سایز را انتخاب کنید";
         } else {
             infoBox.classList.remove("hidden");
@@ -239,7 +320,7 @@
             const stock = parseInt(selectedOption.getAttribute("data-stock"));
             const rawFeatures = selectedOption.getAttribute("data-features");
 
-            document.getElementById("display-price").innerText = price + " تومان";
+            document.getElementById("display-price").innerHTML = price + " <span class='text-lg font-normal text-gray-500'>تومان</span>";
 
             featuresBox.innerHTML = "";
             const cleanFeatures = rawFeatures.replace(/\\u000D\\u000A|\\n|\\r\\n/g, '\n').split('\n');
@@ -249,29 +330,29 @@
                 if (line && line !== "بدون ویژگی خاص") {
                     const badge = document.createElement("span");
                     badge.innerText = line;
-                    badge.className = "bg-white text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold border border-gray-300";
+                    badge.className = "bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 shadow-sm";
                     featuresBox.appendChild(badge);
                 }
             });
 
             if (featuresBox.innerHTML === "") {
-                featuresBox.innerHTML = "<span class='text-gray-500 text-sm'>ویژگی خاصی ثبت نشده است.</span>";
+                featuresBox.innerHTML = "<span class='text-gray-500 text-xs font-bold'>ویژگی خاصی ثبت نشده است.</span>";
             }
 
             const stockDisplay = document.getElementById("display-stock");
             if (stock > 0) {
-                stockDisplay.innerText = "✅ موجود در انبار (" + stock + " عدد)";
-                stockDisplay.className = "text-lg mb-4 text-emerald-600 font-bold";
+                stockDisplay.innerHTML = "<i class='fa-solid fa-check-circle'></i> موجود در انبار (" + stock + " عدد)";
+                stockDisplay.className = "text-sm mb-4 text-emerald-600 font-bold flex items-center gap-1";
                 
                 btn.disabled = false;
-                btn.className = "w-full mt-6 py-4 rounded-xl font-bold text-lg text-white bg-emerald-500 hover:bg-emerald-600 hover:shadow-lg hover:-translate-y-0.5 transition duration-300 flex items-center justify-center gap-2 cursor-pointer";
-                btn.innerHTML = "🛒 افزودن به سبد خرید";
+                btn.className = "w-full mt-4 py-4 rounded-xl font-bold text-lg text-white bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-1 transition duration-300 flex items-center justify-center gap-3 cursor-pointer";
+                btn.innerHTML = "<i class='fa-solid fa-cart-plus text-xl'></i> افزودن به سبد خرید";
             } else {
-                stockDisplay.innerText = "❌ این سایز در حال حاضر ناموجود است";
-                stockDisplay.className = "text-lg mb-4 text-red-500 font-bold";
+                stockDisplay.innerHTML = "<i class='fa-solid fa-xmark-circle'></i> این سایز در حال حاضر ناموجود است";
+                stockDisplay.className = "text-sm mb-4 text-red-500 font-bold flex items-center gap-1";
                 
                 btn.disabled = true;
-                btn.className = "w-full mt-6 py-4 rounded-xl font-bold text-lg text-white bg-red-400 transition flex items-center justify-center gap-2 cursor-not-allowed";
+                btn.className = "w-full mt-4 py-4 rounded-xl font-bold text-lg text-white bg-red-400 transition flex items-center justify-center gap-2 cursor-not-allowed";
                 btn.innerText = "ناموجود";
             }
         }
