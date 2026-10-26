@@ -6,7 +6,8 @@
         <h2 class="text-2xl font-bold text-slate-800">مدیریت محصولات</h2>
         <p class="text-gray-500 mt-1 text-sm font-bold">لیست تمامی لباس‌های ثبت شده در سیستم</p>
     </div>
-    <a href="#" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-5 rounded-xl transition shadow-sm flex items-center gap-2">
+    <!-- لینک مربوط به افزودن محصول در خط زیر اصلاح شد -->
+    <a href="{% url 'dashboard_product_create' %}" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-5 rounded-xl transition shadow-sm flex items-center gap-2">
         <i class="fa-solid fa-plus"></i> افزودن محصول جدید
     </a>
 </div>

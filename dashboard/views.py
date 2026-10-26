@@ -232,7 +232,8 @@ def dashboard_product_create(request):
         size_stocks = request.POST.getlist('size_stock[]')
         size_min_heights = request.POST.getlist('size_min_height[]')
         size_max_heights = request.POST.getlist('size_max_height[]')
-        
+        size_features = request.POST.getlist('size_feature[]')
+
         for i in range(len(size_names)):
             if size_names[i].strip():  # بررسی خالی نبودن نام سایز
                 ProductSize.objects.create(
@@ -242,7 +243,8 @@ def dashboard_product_create(request):
                     price=size_prices[i] if size_prices[i].strip() else product.price,
                     stock=size_stocks[i] if size_stocks[i].strip() else 0,
                     min_height=size_min_heights[i] if size_min_heights[i].strip() else None,
-                    max_height=size_max_heights[i] if size_max_heights[i].strip() else None
+                    max_height=size_max_heights[i] if size_max_heights[i].strip() else None,
+                    features=size_features[i] if i < len(size_features) and size_features[i].strip() else None
                 )
             
         return redirect('dashboard_product_list')
