@@ -32,7 +32,10 @@
             <!-- تصویر محصول -->
             <!-- اگر url صفحه جزئیات شما نام دیگری دارد، product_detail را تغییر دهید -->
             <a href="{% url 'product_detail' product.id %}" class="relative aspect-[4/5] block overflow-hidden bg-slate-50">
-                {% if product.image %}
+                <!-- در بخش کارت‌های محصول جایگزین کنید -->
+                {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500">
+                {% elif product.image %}
                     <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500">
                 {% else %}
                     <div class="w-full h-full flex items-center justify-center text-slate-300">

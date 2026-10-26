@@ -24,12 +24,15 @@
                 <span class="text-sm text-gray-500 block mb-1">شماره تماس:</span>
                 <strong class="text-slate-800">{{ order.phone|default:"ندارد" }}</strong>
             </div>
-            <div class="sm:col-span-2">
+            <div>
+                <span class="text-sm text-gray-500 block mb-1">کد پستی:</span>
+                <strong class="text-slate-800">{{ order.zip_code|default:"ثبت نشده" }}</strong>
+            </div>
+            <div class="sm:col-span-2 mt-2">
                 <span class="text-sm text-gray-500 block mb-1">آدرس دقیق:</span>
                 <strong class="text-slate-800 leading-relaxed">{{ order.address|default:"ثبت نشده" }}</strong>
             </div>
         </div>
-    </div>
 
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
         <div>

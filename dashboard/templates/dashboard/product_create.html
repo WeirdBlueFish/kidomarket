@@ -1,0 +1,118 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-slate-800">افزودن محصول جدید</h2>
+</div>
+
+<div class="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm max-w-4xl">
+    <form method="post" enctype="multipart/form-data" class="flex flex-col gap-6">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">نام محصول:</label>
+                <input type="text" name="name" required class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">قیمت (تومان):</label>
+                <input type="number" name="price" required class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">حداقل سن (سال):</label>
+                <input type="number" name="min_age" class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">حداکثر سن (سال):</label>
+                <input type="number" name="max_age" class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">جنسیت:</label>
+                <select name="gender" class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition font-sans">
+                    <option value="girl">دخترانه</option>
+                    <option value="boy">پسرانه</option>
+                    <option value="sport">اسپرت (مشترک)</option>
+                </select>
+            </div>
+            
+            <!-- اینپوت آپلود چندتایی عکس -->
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">گالری تصاویر (انتخاب چند عکس):</label>
+                <input type="file" name="images" multiple accept="image/*" class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition cursor-pointer">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">توضیحات کامل:</label>
+            <textarea name="description" rows="4" class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition resize-y"></textarea>
+        </div>
+        <!-- بخش داینامیک سایزها -->
+        <div class="border-t border-gray-100 pt-6 mt-2">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-800">📏 سایزها و موجودی انبار</h3>
+                <button type="button" id="add-size-btn" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> افزودن سایز جدید
+                </button>
+            </div>
+            
+            <!-- کانتینر ردیف‌های سایز -->
+            <div id="sizes-container" class="flex flex-col gap-4">
+                <!-- ردیف پیش‌فرض (اولین سایز) -->
+                <div class="size-row bg-slate-50 p-4 rounded-xl border border-gray-200 grid grid-cols-1 md:grid-cols-6 gap-4 items-end relative">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">نام سایز (مثلاً ۲ ساله یا S):</label>
+                        <input type="text" name="size_name[]" required class="w-full p-2.5 rounded-lg border border-gray-300 focus:border-blue-500 outline-none font-sans text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">قیمت اختصاصی:</label>
+                        <input type="number" name="size_price[]" class="w-full p-2.5 rounded-lg border border-gray-300 focus:border-blue-500 outline-none font-sans text-sm" placeholder="قیمت پیش‌فرض">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">موجودی:</label>
+                        <input type="number" name="size_stock[]" required class="w-full p-2.5 rounded-lg border border-gray-300 focus:border-blue-500 outline-none font-sans text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">حداقل قد (cm):</label>
+                        <input type="number" name="size_min_height[]" class="w-full p-2.5 rounded-lg border border-gray-300 focus:border-blue-500 outline-none font-sans text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">حداکثر قد (cm):</label>
+                        <input type="number" name="size_max_height[]" class="w-full p-2.5 rounded-lg border border-gray-300 focus:border-blue-500 outline-none font-sans text-sm">
+                    </div>
+                    <!-- دکمه حذف ردیف (در ردیف اول مخفی است) -->
+                    <button type="button" class="remove-size-btn absolute top-3 left-3 text-red-500 hover:text-red-700 hidden">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- اسکریپت تکثیر ردیف سایزها -->
+        <script>
+            document.getElementById('add-size-btn').addEventListener('click', function() {
+                const container = document.getElementById('sizes-container');
+                const rows = container.getElementsByClassName('size-row');
+                const newRow = rows[0].cloneNode(true);
+                
+                // پاک کردن مقادیر اینپوت‌های کپی شده
+                const inputs = newRow.querySelectorAll('input');
+                inputs.forEach(input => input.value = '');
+                
+                // نمایش دکمه حذف برای ردیف‌های جدید
+                const removeBtn = newRow.querySelector('.remove-size-btn');
+                removeBtn.classList.remove('hidden');
+                removeBtn.addEventListener('click', function() {
+                    newRow.remove();
+                });
+                
+                container.appendChild(newRow);
+            });
+        </script>
+        <div class="mt-4 flex justify-end">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl transition flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> ثبت محصول
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

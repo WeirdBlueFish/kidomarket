@@ -11,7 +11,8 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
     paid = models.BooleanField(default=False, verbose_name="پرداخت شده")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', null=True, blank=True, verbose_name='کاربر سایت')
-    
+    zip_code = models.CharField(max_length=10, verbose_name='کد پستی')
+
     class Meta:
         verbose_name = "سفارش"
         verbose_name_plural = "سفارشات"

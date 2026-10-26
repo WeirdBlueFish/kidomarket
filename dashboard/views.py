@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
 from orders.models import Order, OrderItem
-from products.models import Products 
+from products.models import Products, ProductImage, ProductSize
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django import forms
@@ -206,3 +206,45 @@ def dashboard_user_list(request):
         'users': users,
     }
     return render(request, 'dashboard/user_list.html', context)
+
+
+@staff_member_required
+def dashboard_product_create(request):
+    if request.method == 'POST':
+        # ۱. ذخیره محصول اصلی
+        product = Products.objects.create(
+            name=request.POST.get('name'),
+            price=request.POST.get('price'),
+            description=request.POST.get('description'),
+            min_age=request.POST.get('min_age') or 0,
+            max_age=request.POST.get('max_age') or 0,
+            gender=request.POST.get('gender')
+        )
+        
+        # ۲. ذخیره گالری تصاویر
+        images = request.FILES.getlist('images')
+        for img in images:
+            ProductImage.objects.create(product=product, image=img)
+            
+        # ۳. دریافت و ذخیره سایزها از فرم داینامیک
+        size_names = request.POST.getlist('size_name[]')
+        size_prices = request.POST.getlist('size_price[]')
+        size_stocks = request.POST.getlist('size_stock[]')
+        size_min_heights = request.POST.getlist('size_min_height[]')
+        size_max_heights = request.POST.getlist('size_max_height[]')
+        
+        for i in range(len(size_names)):
+            if size_names[i].strip():  # بررسی خالی نبودن نام سایز
+                ProductSize.objects.create(
+                    product=product,
+                    name=size_names[i],
+                    # استفاده از if برای جلوگیری از خطای استرینگ خالی ("")
+                    price=size_prices[i] if size_prices[i].strip() else product.price,
+                    stock=size_stocks[i] if size_stocks[i].strip() else 0,
+                    min_height=size_min_heights[i] if size_min_heights[i].strip() else None,
+                    max_height=size_max_heights[i] if size_max_heights[i].strip() else None
+                )
+            
+        return redirect('dashboard_product_list')
+        
+    return render(request, 'dashboard/product_create.html')

@@ -92,3 +92,10 @@ class Comment(models.Model):
             return jalali_date.strftime("%Y/%m/%d")
     
     get_jalali.short_description = "تاریخ ثبت (شمسی)"
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='products/gallery/')
+    
+    def __str__(self):
+        return f"عکس برای {self.product.name}"
