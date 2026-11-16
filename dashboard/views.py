@@ -9,6 +9,8 @@ from django import forms
 import json
 import datetime
 from django.utils import timezone
+from coupens.models import Coupon
+from coupens.forms import CouponAdminForm
 
 @staff_member_required
 def dashboard_home(request):
@@ -250,3 +252,40 @@ def dashboard_product_create(request):
         return redirect('dashboard_product_list')
         
     return render(request, 'dashboard/product_create.html')
+
+# این ۴ تابع را به انتهای فایل اضافه کنید:
+@staff_member_required
+def dashboard_coupon_list(request):
+    coupons = Coupon.objects.all().order_by('-valid_from')
+    return render(request, 'dashboard/coupon_list.html', {'coupons': coupons})
+
+@staff_member_required
+def dashboard_coupon_create(request):
+    if request.method == 'POST':
+        form = CouponAdminForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard_coupon_list')
+    else:
+        form = CouponAdminForm()
+    return render(request, 'dashboard/coupon_form.html', {'form': form, 'title': 'افزودن کد تخفیف جدید'})
+
+@staff_member_required
+def dashboard_coupon_edit(request, coupon_id):
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    if request.method == 'POST':
+        form = CouponAdminForm(request.POST, instance=coupon)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard_coupon_list')
+    else:
+        form = CouponAdminForm(instance=coupon)
+    return render(request, 'dashboard/coupon_form.html', {'form': form, 'coupon': coupon, 'title': f'ویرایش کد: {coupon.code}'})
+
+@staff_member_required
+def dashboard_coupon_delete(request, coupon_id):
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    if request.method == 'POST':
+        coupon.delete()
+        return redirect('dashboard_coupon_list')
+    return render(request, 'dashboard/coupon_confirm_delete.html', {'coupon': coupon})

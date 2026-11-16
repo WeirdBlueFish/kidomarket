@@ -4,8 +4,7 @@
 <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4 border-b border-gray-100 pb-4">
     <div>
         <h2 class="text-2xl font-bold text-slate-800">جزئیات سفارش #{{ order.id }}</h2>
-        <!-- فراخوانی تابع تاریخ شمسی از کلاس مدل -->
-        <p class="text-gray-500 mt-1 text-sm font-bold">ثبت شده در: {{ order.get_jalali}}</p>
+        <p class="text-gray-500 mt-1 text-sm font-bold">ثبت شده در: {{ order.get_jalali }}</p>
     </div>
     <a href="{% url 'dashboard_order_list' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl transition flex items-center gap-2">
         بازگشت به لیست ⮌
@@ -16,29 +15,16 @@
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2">
         <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-50 pb-2">👤 اطلاعات مشتری و ارسال</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <span class="text-sm text-gray-500 block mb-1">نام گیرنده:</span>
-                <strong class="text-slate-800">{{ order.first_name }} {{ order.last_name }}</strong>
-            </div>
-            <div>
-                <span class="text-sm text-gray-500 block mb-1">شماره تماس:</span>
-                <strong class="text-slate-800">{{ order.phone|default:"ندارد" }}</strong>
-            </div>
-            <div>
-                <span class="text-sm text-gray-500 block mb-1">کد پستی:</span>
-                <strong class="text-slate-800">{{ order.zip_code|default:"ثبت نشده" }}</strong>
-            </div>
-            <div class="sm:col-span-2 mt-2">
-                <span class="text-sm text-gray-500 block mb-1">آدرس دقیق:</span>
-                <strong class="text-slate-800 leading-relaxed">{{ order.address|default:"ثبت نشده" }}</strong>
-            </div>
+            <div><span class="text-sm text-gray-500 block mb-1">نام گیرنده:</span><strong class="text-slate-800">{{ order.first_name }} {{ order.last_name }}</strong></div>
+            <div><span class="text-sm text-gray-500 block mb-1">شماره تماس:</span><strong class="text-slate-800">{{ order.phone|default:"ندارد" }}</strong></div>
+            <div class="sm:col-span-2 mt-2"><span class="text-sm text-gray-500 block mb-1">آدرس دقیق:</span><strong class="text-slate-800 leading-relaxed">{{ order.address|default:"ثبت نشده" }}</strong></div>
         </div>
+    </div>
 
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
         <div>
-            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-50 pb-2">💳 وضعیت سفارش</h3>
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-50 pb-2">💳 وضعیت پرداخت</h3>
             <div class="mb-4">
-                <span class="text-sm text-gray-500 block mb-1">وضعیت پرداخت:</span>
                 {% if order.paid %}
                     <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-sm font-bold inline-block">موفق</span>
                 {% else %}
@@ -46,19 +32,6 @@
                 {% endif %}
             </div>
         </div>
-        
-        <form method="post" class="mt-auto border-t border-gray-50 pt-4">
-            {% csrf_token %}
-            <label class="text-sm text-gray-500 block mb-2 font-bold">تغییر وضعیت ارسال:</label>
-            <div class="flex gap-2">
-                <select name="status" class="flex-1 p-2 rounded-lg border border-gray-300 focus:border-blue-500 outline-none text-sm font-sans">
-                    <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>در حال پردازش</option>
-                    <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>ارسال شده</option>
-                    <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>تحویل داده شده</option>
-                </select>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition text-sm">ثبت</button>
-            </div>
-        </form>
     </div>
 </div>
 
@@ -82,21 +55,24 @@
                         <td class="p-4"><strong class="text-slate-800 block">{{ item.product.name }}</strong></td>
                         <td class="p-4 text-center font-bold text-slate-700">{{ item.quantity }} عدد</td>
                         <td class="p-4 text-gray-500">{{ item.price }} تومان</td>
-                        <!-- فراخوانی مبلغ هر ردیف -->
                         <td class="p-4 text-emerald-600 font-bold">{{ item.get_cost }} تومان</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="4" class="p-8 text-center text-gray-500 font-bold">آیتمی برای این سفارش یافت نشد.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class="p-6 bg-slate-50 border-t border-gray-100 text-left">
-        <span class="text-gray-500 font-bold ml-2">جمع کل فاکتور:</span>
-        <!-- فراخوانی جمع کل سفارش -->
-        <strong class="text-2xl text-emerald-600">{{ order.get_total_cost }} تومان</strong>
+    
+    <div class="p-6 bg-slate-50 border-t border-gray-100 flex flex-col gap-3 text-left">
+        {% if order.discount > 0 %}
+            <div class="flex justify-end items-center text-emerald-600 text-sm">
+                <span class="font-bold ml-2">کد تخفیف اعمال شده ({{ order.discount }}%):</span>
+                <span class="font-bold bg-emerald-100 px-3 py-1 rounded-lg">{{ order.coupon.code }}</span>
+            </div>
+        {% endif %}
+        <div class="flex justify-end items-center mt-2 {% if order.discount > 0 %}pt-4 border-t border-gray-200{% endif %}">
+            <span class="text-gray-500 font-bold ml-3 text-lg">جمع کل فاکتور:</span>
+            <strong class="text-2xl text-blue-600">{{ order.get_total_cost|floatformat:"0" }} تومان</strong>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -6,7 +6,13 @@
     <h2 class="text-2xl md:text-3xl font-bold text-emerald-600 mb-6">سفارش شما با موفقیت ثبت شد!</h2>
     
     <div class="bg-emerald-50 text-emerald-800 p-4 rounded-xl border border-emerald-100 mb-6 inline-block w-full">
-        <p class="m-0 text-lg">شماره پیگیری سفارش شما: <strong class="text-xl mx-1">#{{ order.id }}</strong></p>
+        <p class="m-0 text-lg mb-3">شماره پیگیری سفارش شما: <strong class="text-xl mx-1">#{{ order.id }}</strong></p>
+        <hr class="border-emerald-200 my-3">
+        <p class="m-0 text-lg flex flex-col sm:flex-row justify-center items-center gap-2">
+            <span class="text-emerald-700">مبلغ قابل پرداخت:</span>
+            <!-- get_total_cost به طور خودکار تخفیف را محاسبه و نمایش می‌دهد -->
+            <strong class="text-2xl text-emerald-800">{{ order.get_total_cost|floatformat:"0" }} تومان</strong>
+        </p>
     </div>
     
     <p class="text-gray-500 mb-8 leading-relaxed">از خرید شما سپاسگزاریم. لطفاً برای نهایی شدن فرآیند خرید، مبلغ فاکتور را پرداخت کنید.</p>

@@ -13,6 +13,9 @@ urlpatterns = [
     path('orders/', views.dashboard_order_list, name='dashboard_order_list'),
     path('orders/<int:pk>/', views.dashboard_order_detail, name='dashboard_order_detail'),
     path('users/', views.dashboard_user_list, name='dashboard_user_list'),
-    path('dashboard_product_create/', views.dashboard_product_create, name='dashboard_product_create')
-    
+    path('dashboard_product_create/', views.dashboard_product_create, name='dashboard_product_create'),
+    path('coupons/', views.dashboard_coupon_list, name='dashboard_coupon_list'),
+    path('coupons/add/', views.dashboard_coupon_create, name='dashboard_coupon_create'),
+    path('coupons/edit/<int:coupon_id>/', views.dashboard_coupon_edit, name='dashboard_coupon_edit'),
+    path('coupons/delete/<int:coupon_id>/', views.dashboard_coupon_delete, name='dashboard_coupon_delete'),
 ]

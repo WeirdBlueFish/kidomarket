@@ -1,0 +1,24 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="max-w-xl mx-auto bg-white p-10 rounded-3xl border border-gray-100 shadow-sm text-center mt-10">
+    <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid fa-triangle-exclamation text-4xl"></i>
+    </div>
+    
+    <h2 class="text-2xl font-bold text-slate-800 mb-4">آیا از حذف این کد مطمئن هستید؟</h2>
+    <p class="text-gray-500 mb-8 leading-relaxed">
+        شما در حال حذف کد تخفیف <strong class="text-slate-800 bg-slate-100 px-2 py-1 rounded mx-1">{{ coupon.code }}</strong> هستید. این عملیات غیرقابل بازگشت است.
+    </p>
+    
+    <form method="post" class="flex flex-col sm:flex-row gap-4 justify-center">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-xl transition shadow-sm">
+            بله، حذف شود
+        </button>
+        <a href="{% url 'dashboard_coupon_list' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-8 rounded-xl transition">
+            انصراف و بازگشت
+        </a>
+    </form>
+</div>
+{% endblock %}

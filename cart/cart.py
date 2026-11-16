@@ -1,4 +1,6 @@
-from products.models import Products, ProductSize # حتما ProductSize را ایمپورت کنید
+from products.models import Products, ProductSize
+from coupens.models import Coupon
+from decimal import Decimal
 
 class Cart:
     def __init__(self, request):
@@ -7,6 +9,8 @@ class Cart:
         if not cart:
             cart = self.session['cart'] = {}
         self.cart = cart
+        # دریافت آیدی کد تخفیف از سشن
+        self.coupon_id = self.session.get('coupon_id')
 
     # تابع add حالا سایز را هم به عنوان ورودی می‌گیرد
     def add(self, product, size):
@@ -33,6 +37,9 @@ class Cart:
 
     def clear(self):
         del self.session['cart']
+        # در صورت خالی شدن سبد، کد تخفیف هم پاک می‌شود
+        if 'coupon_id' in self.session:
+            del self.session['coupon_id']
         self.session.modified = True
 
     def __iter__(self):
@@ -57,3 +64,22 @@ class Cart:
 
     def get_total_price(self):
         return sum(item['price'] * item['quantity'] for item in self.cart.values())
+
+    # --- بخش اضافه شده برای پشتیبانی از کدهای تخفیف ---
+    
+    @property
+    def coupon(self):
+        if self.coupon_id:
+            try:
+                return Coupon.objects.get(id=self.coupon_id)
+            except Coupon.DoesNotExist:
+                pass
+        return None
+
+    def get_discount(self):
+        if self.coupon:
+            return (self.coupon.discount / Decimal(100)) * self.get_total_price()
+        return Decimal(0)
+
+    def get_total_price_after_discount(self):
+        return self.get_total_price() - self.get_discount()

@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from products.models import Products, ProductSize
 import jdatetime
+from coupens.models import Coupon
+from decimal import Decimal
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Order(models.Model):
     first_name = models.CharField(max_length=50, verbose_name="نام")
@@ -12,6 +15,8 @@ class Order(models.Model):
     paid = models.BooleanField(default=False, verbose_name="پرداخت شده")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', null=True, blank=True, verbose_name='کاربر سایت')
     zip_code = models.CharField(max_length=10, verbose_name='کد پستی')
+    coupon = models.ForeignKey(Coupon, related_name='orders', null=True, blank=True, on_delete=models.SET_NULL, verbose_name="کد تخفیف استفاده شده")
+    discount = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)], verbose_name="درصد تخفیف")
 
     class Meta:
         verbose_name = "سفارش"
@@ -27,7 +32,8 @@ class Order(models.Model):
     get_jalali.short_description = "تاریخ ثبت (شمسی)"
 
     def get_total_cost(self):
-        return sum(item.get_cost() for item in self.items.all())
+        total_cost = sum(item.get_cost() for item in self.items.all())
+        return total_cost - (total_cost * (self.discount / Decimal(100)))
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)

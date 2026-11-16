@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from products.models import Products, ProductSize
 from .cart import Cart
+from coupens.forms import CouponApplyForm # ایمپورت فرم
 
 # Create your views here.
 
@@ -27,4 +28,8 @@ def cart_remove(request, size_id):
 
 def cart_detail(request):
     cart = Cart(request)
-    return render(request, 'cart/cart_detail.html', {'cart': cart})
+    coupon_apply_form = CouponApplyForm()
+    return render(request, 'cart/cart_detail.html', {
+        'cart': cart,
+        'coupon_apply_form': coupon_apply_form
+    })

@@ -16,6 +16,12 @@ def order_create(request):
             if request.user.is_authenticated:
                 order.user = request.user
 
+            # --- بخش اضافه شده برای اعمال تخفیف روی فاکتور ---
+            if cart.coupon:
+                order.coupon = cart.coupon
+                order.discount = cart.coupon.discount
+            # --------------------------------------------------
+
             order.save()
             
             for item in cart:
@@ -37,7 +43,6 @@ def order_create(request):
 
     else:
         form = OrderCreateForm()
-
 
     return render(request, 'orders/order_create.html', {'cart': cart, 'form': form})
 
