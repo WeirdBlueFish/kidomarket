@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'accounts',
     'dashboard',
     'coupens',
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +146,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+import os
+
+# دریافت لینک کلودینری از متغیرهای محیطی سرور
+CLOUDINARY_STORAGE = {
+    'CLOUDINARY_URL': os.environ.get('CLOUDINARY_URL')
+}
+
+# -- برای نسخه‌های جدید جنگو (5.0 به بعد) --
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+# (نکته: اگر از نسخه‌های قدیمی جنگو مثل 4.2 استفاده می‌کنید، به جای خطوط STORAGES بالا، فقط بنویسید:)
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
