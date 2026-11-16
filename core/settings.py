@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'dashboard',
     'coupens',
     'cloudinary_storage',
-    'django.contrib.staticfiles',
     'cloudinary',
 ]
 
