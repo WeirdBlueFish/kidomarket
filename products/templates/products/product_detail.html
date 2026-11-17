@@ -21,7 +21,8 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mb-16">
         
         <!-- ستون سمت راست: تصویر محصول و گالری -->
-        <div class="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm sticky top-28">
+        <!-- تغییر مهم: md:sticky و md:top-28 اضافه شد تا فقط در دسکتاپ استیکی باشد -->
+        <div class="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm md:sticky md:top-28">
             <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-slate-50 relative">
                 <!-- بخش نمایش عکس محصول -->
                 {% if product.images.first %}
@@ -212,7 +213,7 @@
             </div>
 
             <!-- فرم ثبت نظر -->
-            <div class="bg-slate-50 p-6 rounded-2xl border border-gray-100 h-fit sticky top-28">
+            <div class="bg-slate-50 p-6 rounded-2xl border border-gray-100 h-fit md:sticky md:top-28">
                 <h4 class="text-lg font-bold text-slate-800 mb-4">ثبت نظر جدید</h4>
                 {% if request.user.is_authenticated %}
                     <form method="post" class="flex flex-col gap-4">
