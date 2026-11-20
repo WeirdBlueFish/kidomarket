@@ -18,6 +18,7 @@
                     <th class="p-4 font-bold text-sm">خریدار</th>
                     <th class="p-4 font-bold text-sm">تاریخ ثبت</th>
                     <th class="p-4 font-bold text-sm">وضعیت پرداخت</th>
+                    <th class="p-4 font-bold text-sm">مرحله سفارش</th>
                     <th class="p-4 font-bold text-sm text-center">عملیات</th>
                 </tr>
             </thead>
@@ -41,6 +42,16 @@
                                 <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">در انتظار پرداخت</span>
                             {% endif %}
                         </td>
+                        <td class="p-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold
+                                {% if order.status == 'pending' %}bg-amber-100 text-amber-700
+                                {% elif order.status == 'confirmed' %}bg-blue-100 text-blue-700
+                                {% elif order.status == 'processing' %}bg-purple-100 text-purple-700
+                                {% elif order.status == 'shipped' %}bg-emerald-100 text-emerald-700
+                                {% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
                         <td class="p-4 text-center">
                             <a href="{% url 'dashboard_order_detail' order.id %}" class="inline-flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-lg transition font-bold text-sm">
                                 <i class="fa-solid fa-eye"></i> مشاهده جزئیات
@@ -49,7 +60,7 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="5" class="p-8 text-center text-gray-500 font-bold">هیچ سفارشی یافت نشد.</td>
+                        <td colspan="6" class="p-8 text-center text-gray-500 font-bold">هیچ سفارشی یافت نشد.</td>
                     </tr>
                 {% endfor %}
             </tbody>

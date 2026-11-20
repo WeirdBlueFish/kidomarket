@@ -125,23 +125,18 @@ def dashboard_order_list(request):
 
 
 @staff_member_required
-def dashboard_order_detail(request, pk):
-    order = get_object_or_404(Order, pk=pk)
-    
-    # اگر مدیر وضعیت سفارش را تغییر داد و دکمه ثبت را زد
+def dashboard_order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        # فرض می‌کنیم فیلدی به نام status یا شبیه به آن در مدل Order دارید
-        # در غیر این صورت می‌توانید به جای status از فیلدهای موجود خودتان استفاده کنید
-        if hasattr(order, 'status'): 
+        valid_statuses = [choice[0] for choice in Order.STATUS_CHOICES]
+        if new_status in valid_statuses:
             order.status = new_status
             order.save()
-        return redirect('dashboard_order_detail', pk=order.id)
-        
-    context = {
-        'order': order,
-    }
-    return render(request, 'dashboard/order_detail.html', context)
+        return redirect('dashboard_order_detail', order_id=order.id)
+
+    return render(request, 'dashboard/order_detail.html', {'order': order})
 
 
 @staff_member_required

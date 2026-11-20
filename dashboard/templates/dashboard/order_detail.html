@@ -23,15 +23,43 @@
 
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
         <div>
-            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-50 pb-2">💳 وضعیت پرداخت</h3>
-            <div class="mb-4">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-gray-50 pb-2">💳 وضعیت سفارش و پرداخت</h3>
+            
+            <div class="mb-4 flex items-center justify-between">
+                <span class="text-sm text-gray-500">وضعیت پرداخت:</span>
                 {% if order.paid %}
-                    <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-sm font-bold inline-block">موفق</span>
+                    <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-xs font-bold">موفق</span>
                 {% else %}
-                    <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-sm font-bold inline-block">در انتظار پرداخت</span>
+                    <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-xs font-bold">در انتظار پرداخت</span>
                 {% endif %}
             </div>
+
+            <div class="mb-4 flex items-center justify-between">
+                <span class="text-sm text-gray-500">مرحله فعلی:</span>
+                <span class="px-3 py-1 rounded-lg text-xs font-bold
+                    {% if order.status == 'pending' %}bg-amber-100 text-amber-700
+                    {% elif order.status == 'confirmed' %}bg-blue-100 text-blue-700
+                    {% elif order.status == 'processing' %}bg-purple-100 text-purple-700
+                    {% elif order.status == 'shipped' %}bg-emerald-100 text-emerald-700
+                    {% endif %}">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
         </div>
+
+        <form method="post" class="mt-auto border-t border-gray-50 pt-4">
+            {% csrf_token %}
+            <label class="text-sm text-gray-500 block mb-2 font-bold">تغییر مرحله سفارش:</label>
+            <div class="flex gap-2">
+                <select name="status" class="flex-1 p-2.5 rounded-lg border border-gray-300 focus:border-blue-500 outline-none text-sm font-sans bg-slate-50">
+                    <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>۱. ثبت شده (در انتظار تایید)</option>
+                    <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>۲. تایید شده</option>
+                    <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>۳. در حال پردازش</option>
+                    <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>۴. ارسال شد (پایان سفارش)</option>
+                </select>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition text-sm">ثبت</button>
+            </div>
+        </form>
     </div>
 </div>
 

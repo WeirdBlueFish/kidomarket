@@ -17,7 +17,21 @@ class Order(models.Model):
     zip_code = models.CharField(max_length=10, verbose_name='کد پستی')
     coupon = models.ForeignKey(Coupon, related_name='orders', null=True, blank=True, on_delete=models.SET_NULL, verbose_name="کد تخفیف استفاده شده")
     discount = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)], verbose_name="درصد تخفیف")
+   
+    STATUS_CHOICES = (
+        ('pending', 'ثبت شده (در انتظار تایید)'),
+        ('confirmed', 'تایید شده'),
+        ('processing', 'در حال پردازش'),
+        ('shipped', 'ارسال شد (پایان سفارش)'),
+    )
 
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        verbose_name="وضعیت سفارش"
+    )
+    
     class Meta:
         verbose_name = "سفارش"
         verbose_name_plural = "سفارشات"
