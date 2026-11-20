@@ -3,25 +3,128 @@
 
 {% block profile_content %}
     <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b-2 border-gray-100 pb-4 mb-6 gap-4">
-        <h2 class="text-2xl font-bold text-slate-800 m-0">جزئیات فاکتور #{{ order.id }}</h2>
+        <div class="flex flex-wrap items-center gap-3">
+            <h2 class="text-2xl font-bold text-slate-800 m-0">جزئیات فاکتور #{{ order.id }}</h2>
+            <span class="px-3 py-1 rounded-full text-xs font-bold border
+                {% if order.status == 'pending' %}bg-amber-50 text-amber-700 border-amber-200
+                {% elif order.status == 'confirmed' %}bg-blue-50 text-blue-700 border-blue-200
+                {% elif order.status == 'processing' %}bg-purple-50 text-purple-700 border-purple-200
+                {% elif order.status == 'shipped' %}bg-emerald-50 text-emerald-700 border-emerald-200
+                {% endif %}">
+                {{ order.get_status_display }}
+            </span>
+        </div>
         <a href="{% url 'accounts:profile_orders' %}" class="text-gray-500 hover:text-slate-800 font-bold transition text-sm">بازگشت به سفارشات ⮌</a>
     </div>
 
-    <div class="bg-slate-50 border border-gray-100 rounded-xl p-5 mb-8 flex flex-col sm:flex-row gap-6">
+    <!-- نوار پیگیری ۴ مرحله‌ای سفارش -->
+    <div class="mb-6 bg-slate-50 p-5 rounded-2xl border border-gray-100">
+        <div class="grid grid-cols-4 gap-2 text-center">
+            <!-- مرحله ۱: ثبت سفارش -->
+            <div class="flex flex-col items-center gap-2">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm bg-emerald-500 text-white shadow-sm">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <span class="text-xs font-bold text-slate-700">ثبت سفارش</span>
+            </div>
+
+            <!-- مرحله ۲: تایید فروشگاه -->
+            <div class="flex flex-col items-center gap-2">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition
+                    {% if order.status == 'confirmed' or order.status == 'processing' or order.status == 'shipped' %}
+                        bg-emerald-500 text-white shadow-sm
+                    {% else %}
+                        bg-gray-200 text-gray-400
+                    {% endif %}">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <span class="text-xs font-bold {% if order.status == 'confirmed' or order.status == 'processing' or order.status == 'shipped' %}text-slate-700{% else %}text-gray-400{% endif %}">تایید فروشگاه</span>
+            </div>
+
+            <!-- مرحله ۳: در حال پردازش -->
+            <div class="flex flex-col items-center gap-2">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition
+                    {% if order.status == 'processing' or order.status == 'shipped' %}
+                        bg-emerald-500 text-white shadow-sm
+                    {% else %}
+                        bg-gray-200 text-gray-400
+                    {% endif %}">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <span class="text-xs font-bold {% if order.status == 'processing' or order.status == 'shipped' %}text-slate-700{% else %}text-gray-400{% endif %}">در حال پردازش</span>
+            </div>
+
+            <!-- مرحله ۴: ارسال و پایان -->
+            <div class="flex flex-col items-center gap-2">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition
+                    {% if order.status == 'shipped' %}
+                        bg-emerald-500 text-white shadow-sm
+                    {% else %}
+                        bg-gray-200 text-gray-400
+                    {% endif %}">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <span class="text-xs font-bold {% if order.status == 'shipped' %}text-emerald-600{% else %}text-gray-400{% endif %}">ارسال و پایان</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- اطلاعات کلی سفارش -->
+    <div class="bg-slate-50 border border-gray-100 rounded-xl p-5 mb-6 flex flex-wrap gap-6">
         <div>
             <span class="text-gray-500 text-sm">تاریخ ثبت:</span> 
-            <strong class="text-slate-800">{{ order.created|to_jalali }}</strong>
+            <strong class="text-slate-800 mr-1">{{ order.created|to_jalali }}</strong>
         </div>
         <div>
             <span class="text-gray-500 text-sm">وضعیت پرداخت:</span> 
             {% if order.paid %}
-                <strong class="text-emerald-600">موفق</strong>
+                <strong class="text-emerald-600 mr-1">موفق</strong>
             {% else %}
-                <strong class="text-red-500">ناموفق</strong>
+                <strong class="text-red-500 mr-1">ناموفق</strong>
             {% endif %}
+        </div>
+        <div>
+            <span class="text-gray-500 text-sm">وضعیت ارسال:</span>
+            <strong class="text-slate-800 mr-1">{{ order.get_status_display }}</strong>
         </div>
     </div>
 
+    <!-- باکس کد رهگیری پستی -->
+    {% if order.tracking_code %}
+        <div class="bg-blue-50 p-5 rounded-xl border border-blue-200 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs font-bold text-blue-600 block mb-1">
+                    <i class="fa-solid fa-truck-fast ml-1"></i> کد رهگیری مرسوله پستی:
+                </span>
+                <strong id="tracking-code-text" class="text-lg text-slate-800 tracking-wider font-sans select-all" dir="ltr">
+                    {{ order.tracking_code }}
+                </strong>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="copyTrackingCode(this)"
+                        class="bg-white hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-2 px-3.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                    <i class="fa-regular fa-copy"></i> کپی کد
+                </button>
+                <a href="https://tracking.post.ir/" target="_blank" rel="noopener noreferrer"
+                   class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> پیگیری در سایت پست
+                </a>
+            </div>
+        </div>
+
+        <script>
+            function copyTrackingCode(btn) {
+                const code = document.getElementById("tracking-code-text").innerText.trim();
+                navigator.clipboard.writeText(code).then(() => {
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = "<i class='fa-solid fa-check'></i> کپی شد!";
+                    setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+                });
+            }
+        </script>
+    {% endif %}
+
+    <!-- جدول اقلام فاکتور -->
     <div class="overflow-x-auto rounded-xl border border-gray-200">
         <table class="w-full text-right whitespace-nowrap">
             <thead class="bg-slate-50 text-slate-600 border-b border-gray-200">
@@ -35,7 +138,12 @@
             <tbody class="divide-y divide-gray-100">
                 {% for item in order.items.all %}
                     <tr class="hover:bg-slate-50 transition duration-150">
-                        <td class="p-4 font-bold text-slate-800">{{ item.product.name }}</td>
+                        <td class="p-4">
+                            <strong class="text-slate-800 block">{{ item.product.name }}</strong>
+                            {% if item.product_size %}
+                                <span class="text-xs text-gray-500 font-bold">سایز: {{ item.product_size.name }}</span>
+                            {% endif %}
+                        </td>
                         <td class="p-4 text-gray-600">{{ item.quantity }} عدد</td>
                         <td class="p-4 text-gray-600 font-bold">{{ item.price }} تومان</td>
                         <td class="p-4 text-emerald-600 font-bold">{{ item.get_cost }} تومان</td>
@@ -43,5 +151,29 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <!-- خلاصه مالی فاکتور -->
+    <div class="bg-slate-50 border border-gray-100 rounded-xl p-5 mt-6 flex flex-col gap-3">
+        {% if order.discount > 0 %}
+            <div class="flex justify-between items-center text-emerald-600 text-sm">
+                <span class="font-bold">تخفیف اعمال شده ({{ order.discount }}%):</span>
+                <span class="font-bold bg-emerald-100 px-2.5 py-1 rounded-lg">{{ order.coupon.code }}</span>
+            </div>
+        {% endif %}
+
+        <div class="flex justify-between items-center text-sm text-slate-600">
+            <span class="font-bold">هزینه ارسال:</span>
+            {% if order.shipping_cost == 0 %}
+                <span class="font-bold text-emerald-600">رایگان</span>
+            {% else %}
+                <span class="font-bold text-slate-800">{{ order.shipping_cost }} تومان</span>
+            {% endif %}
+        </div>
+
+        <div class="flex justify-between items-center text-lg pt-3 border-t border-gray-200">
+            <strong class="text-slate-800">مبلغ نهایی:</strong>
+            <strong class="text-blue-600">{{ order.get_total_cost|floatformat:"0" }} تومان</strong>
+        </div>
     </div>
 {% endblock %}

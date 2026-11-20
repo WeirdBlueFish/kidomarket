@@ -12,6 +12,8 @@ import datetime
 from django.utils import timezone
 from coupens.models import Coupon
 from coupens.forms import CouponAdminForm
+from django.contrib import messages
+from orders.models import ShippingSetting
 
 @staff_member_required
 def dashboard_home(request):
@@ -131,10 +133,15 @@ def dashboard_order_detail(request, pk):
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
+        tracking_code = request.POST.get('tracking_code', '').strip()
         valid_statuses = [choice[0] for choice in Order.STATUS_CHOICES]
+
         if new_status in valid_statuses:
             order.status = new_status
-            order.save()
+
+        order.tracking_code = tracking_code if tracking_code else None
+        order.save()
+        messages.success(request, 'وضعیت سفارش و کد رهگیری با موفقیت ذخیره شد.')
         return redirect('dashboard_order_detail', pk=order.id)
 
     return render(request, 'dashboard/order_detail.html', {'order': order})
@@ -298,3 +305,27 @@ def dashboard_notification_toggle(request, pk):
     notif.notified = not notif.notified
     notif.save()
     return redirect('dashboard_notification_list')
+
+
+
+@staff_member_required
+def dashboard_shipping_settings(request):
+    setting = ShippingSetting.get_settings()
+
+    if request.method == 'POST':
+        try:
+            shipping_cost = int(request.POST.get('shipping_cost', 0))
+            free_threshold = int(request.POST.get('free_shipping_threshold', 0))
+
+            if shipping_cost < 0 or free_threshold < 0:
+                messages.error(request, 'مبالغ وارد شده نمی‌توانند منفی باشند.')
+            else:
+                setting.shipping_cost = shipping_cost
+                setting.free_shipping_threshold = free_threshold
+                setting.save()
+                messages.success(request, 'تنظیمات هزینه ارسال با موفقیت ذخیره شد.')
+                return redirect('dashboard_shipping_settings')
+        except ValueError:
+            messages.error(request, 'لطفاً فقط عدد معتبر وارد کنید.')
+
+    return render(request, 'dashboard/shipping_settings.html', {'setting': setting})

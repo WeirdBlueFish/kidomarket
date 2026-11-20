@@ -11,7 +11,9 @@
                     <tr>
                         <th class="p-4 font-bold text-sm">شماره سفارش</th>
                         <th class="p-4 font-bold text-sm">تاریخ ثبت</th>
-                        <th class="p-4 font-bold text-sm">وضعیت</th>
+                        <th class="p-4 font-bold text-sm">وضعیت پرداخت</th>
+                        <th class="p-4 font-bold text-sm">وضعیت سفارش</th>
+                        <th class="p-4 font-bold text-sm">کد رهگیری</th>
                         <th class="p-4 font-bold text-sm">جزئیات</th>
                     </tr>
                 </thead>
@@ -25,6 +27,25 @@
                                     <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">پرداخت شده</span>
                                 {% else %}
                                     <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">پرداخت نشده</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold
+                                    {% if order.status == 'pending' %}bg-amber-100 text-amber-700
+                                    {% elif order.status == 'confirmed' %}bg-blue-100 text-blue-700
+                                    {% elif order.status == 'processing' %}bg-purple-100 text-purple-700
+                                    {% elif order.status == 'shipped' %}bg-emerald-100 text-emerald-700
+                                    {% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                {% if order.tracking_code %}
+                                    <span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-bold font-sans select-all" dir="ltr">
+                                        {{ order.tracking_code }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-gray-400 text-xs font-bold">ثبت نشده</span>
                                 {% endif %}
                             </td>
                             <td class="p-4">

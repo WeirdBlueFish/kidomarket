@@ -83,3 +83,16 @@ class Cart:
 
     def get_total_price_after_discount(self):
         return self.get_total_price() - self.get_discount()
+
+    def get_shipping_cost(self):
+        if len(self) == 0:
+            return Decimal(0)
+        from orders.models import ShippingSetting
+        setting = ShippingSetting.get_settings()
+        subtotal = self.get_total_price_after_discount()
+        if setting.free_shipping_threshold > 0 and subtotal >= setting.free_shipping_threshold:
+            return Decimal(0)
+        return Decimal(setting.shipping_cost)
+
+    def get_final_price(self):
+        return self.get_total_price_after_discount() + self.get_shipping_cost()

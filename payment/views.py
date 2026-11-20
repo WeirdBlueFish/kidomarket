@@ -3,7 +3,7 @@ from orders.models import Order
 
 def payment_process(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    total_price = sum(item.price * item.quantity for item in order.items.all())
+    total_price = int(order.get_total_cost())
 
     if request.method == 'POST':
         # اگر کاربر روی دکمه "پرداخت موفق" کلیک کرد

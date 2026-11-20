@@ -1,0 +1,54 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4 border-b border-gray-100 pb-4">
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">تنظیمات هزینه ارسال</h2>
+        <p class="text-gray-500 mt-1 text-sm font-bold">مدیریت تعرفه ارسال ثابت و شرط ارسال رایگان فروشگاه</p>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="mb-6 flex flex-col gap-2 max-w-2xl">
+        {% for message in messages %}
+            <div class="p-4 rounded-2xl text-sm font-bold border
+                {% if message.tags == 'error' %}bg-red-50 text-red-700 border-red-200
+                {% else %}bg-emerald-50 text-emerald-700 border-emerald-200{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="max-w-2xl bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm">
+    <form method="post" class="flex flex-col gap-6">
+        {% csrf_token %}
+
+        <div>
+            <label for="shipping_cost" class="block text-sm font-bold text-slate-700 mb-2">
+                هزینه ارسال ثابت (تومان):
+            </label>
+            <input type="number" name="shipping_cost" id="shipping_cost" min="0" required
+                   value="{{ setting.shipping_cost }}"
+                   class="w-full p-3.5 rounded-xl border border-gray-300 bg-slate-50 focus:border-blue-500 focus:outline-none font-bold text-slate-800">
+            <p class="text-xs text-gray-500 mt-2">این مبلغ به صورت خودکار به فاکتور تمام سفارش‌ها اضافه می‌شود.</p>
+        </div>
+
+        <div>
+            <label for="free_shipping_threshold" class="block text-sm font-bold text-slate-700 mb-2">
+                حداقل مبلغ خرید برای ارسال رایگان (تومان):
+            </label>
+            <input type="number" name="free_shipping_threshold" id="free_shipping_threshold" min="0" required
+                   value="{{ setting.free_shipping_threshold }}"
+                   class="w-full p-3.5 rounded-xl border border-gray-300 bg-slate-50 focus:border-blue-500 focus:outline-none font-bold text-slate-800">
+            <p class="text-xs text-gray-500 mt-2">اگر عدد <strong>0</strong> وارد کنید، ارسال رایگان غیرفعال می‌شود و برای همه سفارش‌ها هزینه ثابت محاسبه خواهد شد.</p>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100 flex justify-end">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-floppy-disk"></i> ذخیره تنظیمات
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

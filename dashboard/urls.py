@@ -20,4 +20,5 @@ urlpatterns = [
     path('coupons/delete/<int:coupon_id>/', views.dashboard_coupon_delete, name='dashboard_coupon_delete'),
     path('notifications/', views.dashboard_notification_list, name='dashboard_notification_list'),
     path('notifications/<int:pk>/toggle/', views.dashboard_notification_toggle, name='dashboard_notification_toggle'),
+    path('shipping/', views.dashboard_shipping_settings, name='dashboard_shipping_settings'),
 ]

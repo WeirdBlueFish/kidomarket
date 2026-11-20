@@ -6,6 +6,31 @@ from coupens.models import Coupon
 from decimal import Decimal
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
+class ShippingSetting(models.Model):
+    shipping_cost = models.PositiveIntegerField(
+        default=50000,
+        verbose_name="هزینه ارسال ثابت (تومان)"
+    )
+    free_shipping_threshold = models.PositiveIntegerField(
+        default=0,
+        verbose_name="حداقل خرید برای ارسال رایگان (تومان)",
+        help_text="اگر 0 باشد، ارسال رایگان غیرفعال است."
+    )
+
+    class Meta:
+        verbose_name = "تنظیمات هزینه ارسال"
+        verbose_name_plural = "تنظیمات هزینه ارسال"
+
+    def __str__(self):
+        return f"هزینه ارسال: {self.shipping_cost:,} تومان"
+
+    @classmethod
+    def get_settings(cls):
+        obj, _ = cls.objects.get_or_create(id=1)
+        return obj
+
+
 class Order(models.Model):
     first_name = models.CharField(max_length=50, verbose_name="نام")
     last_name = models.CharField(max_length=50, verbose_name="نام خانوادگی")
@@ -17,7 +42,8 @@ class Order(models.Model):
     zip_code = models.CharField(max_length=10, verbose_name='کد پستی')
     coupon = models.ForeignKey(Coupon, related_name='orders', null=True, blank=True, on_delete=models.SET_NULL, verbose_name="کد تخفیف استفاده شده")
     discount = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)], verbose_name="درصد تخفیف")
-   
+    shipping_cost = models.PositiveIntegerField(default=0, verbose_name="هزینه ارسال")
+
     STATUS_CHOICES = (
         ('pending', 'ثبت شده (در انتظار تایید)'),
         ('confirmed', 'تایید شده'),
@@ -31,7 +57,14 @@ class Order(models.Model):
         default='pending',
         verbose_name="وضعیت سفارش"
     )
-    
+
+    tracking_code = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="کد رهگیری پستی"
+    )
+
     class Meta:
         verbose_name = "سفارش"
         verbose_name_plural = "سفارشات"
@@ -47,7 +80,8 @@ class Order(models.Model):
 
     def get_total_cost(self):
         total_cost = sum(item.get_cost() for item in self.items.all())
-        return total_cost - (total_cost * (self.discount / Decimal(100)))
+        after_discount = total_cost - (total_cost * (self.discount / Decimal(100)))
+        return after_discount + self.shipping_cost
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)

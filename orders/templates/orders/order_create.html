@@ -12,7 +12,12 @@
         
         <div class="lg:col-span-2 bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm">
             <h2 class="text-xl font-bold text-slate-800 mb-6 border-b border-gray-100 pb-4">مشخصات گیرنده</h2>
-            
+            {% if form.errors %}
+                <div class="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-bold">
+                    <p class="mb-2">لطفاً خطاهای زیر را برطرف کنید:</p>
+                    {{ form.errors }}
+                </div>
+            {% endif %}
             <form method="post" class="flex flex-col gap-6">
                 {% csrf_token %}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -52,25 +57,33 @@
 
                 <hr class="border-gray-200 mb-6">
                 
+                <div class="flex justify-between items-center mb-3 text-sm">
+                    <span class="text-gray-500 font-bold">جمع مبلغ کالاها:</span>
+                    <span class="text-slate-800 font-bold">{{ cart.get_total_price }} تومان</span>
+                </div>
+
                 {% if cart.coupon %}
-                    <div class="flex justify-between items-center mb-3 text-sm">
-                        <span class="text-gray-500 font-bold">جمع مبلغ کالاها:</span>
-                        <span class="text-slate-800 font-bold">{{ cart.get_total_price }} تومان</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-4 text-emerald-600 bg-emerald-50 p-3 rounded-lg border border-emerald-100 text-sm">
+                    <div class="flex justify-between items-center mb-3 text-emerald-600 bg-emerald-50 p-3 rounded-lg border border-emerald-100 text-sm">
                         <span class="font-bold">تخفیف ({{ cart.coupon.discount }}%):</span>
                         <span class="font-bold font-sans">- {{ cart.get_discount|floatformat:"0" }} تومان</span>
                     </div>
-                    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-blue-200 shadow-sm">
-                        <span class="text-slate-800 font-bold">مبلغ قابل پرداخت:</span>
-                        <span class="text-blue-600 font-bold text-xl">{{ cart.get_total_price_after_discount|floatformat:"0" }} <span class="text-xs font-normal text-gray-500">تومان</span></span>
-                    </div>
-                {% else %}
-                    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200">
-                        <span class="text-slate-800 font-bold">مبلغ نهایی:</span>
-                        <span class="text-emerald-600 font-bold text-xl">{{ cart.get_total_price }} <span class="text-xs font-normal text-gray-500">تومان</span></span>
-                    </div>
                 {% endif %}
+
+                <div class="flex justify-between items-center mb-4 text-sm">
+                    <span class="text-gray-500 font-bold">هزینه ارسال:</span>
+                    {% if cart.get_shipping_cost == 0 %}
+                        <span class="text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg">رایگان</span>
+                    {% else %}
+                        <span class="text-slate-800 font-bold">{{ cart.get_shipping_cost|floatformat:"0" }} تومان</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex justify-between items-center bg-white p-4 rounded-xl border {% if cart.coupon %}border-blue-200 shadow-sm{% else %}border-gray-200{% endif %}">
+                    <span class="text-slate-800 font-bold">مبلغ قابل پرداخت:</span>
+                    <span class="{% if cart.coupon %}text-blue-600{% else %}text-emerald-600{% endif %} font-bold text-xl">
+                        {{ cart.get_final_price|floatformat:"0" }} <span class="text-xs font-normal text-gray-500">تومان</span>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
