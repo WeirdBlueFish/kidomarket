@@ -1,5 +1,6 @@
 from django.db import models
 import jdatetime
+from django.contrib.auth.models import User
 
 class Products(models.Model):
     GENDER_CHOICES = [
@@ -99,3 +100,13 @@ class ProductImage(models.Model):
     
     def __str__(self):
         return f"عکس برای {self.product.name}"
+
+class StockNotification(models.Model):
+    size = models.ForeignKey('ProductSize', on_delete=models.CASCADE, related_name='notifications')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    phone = models.CharField(max_length=15, verbose_name="شماره تماس")
+    created_at = models.DateTimeField(auto_now_add=True)
+    notified = models.BooleanField(default=False, verbose_name="اطلاع‌رسانی شده")
+
+    def __str__(self):
+        return f"{self.phone} - {self.size.product.name} ({self.size.name})"

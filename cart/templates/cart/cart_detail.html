@@ -8,6 +8,19 @@
         <h1 class="text-2xl md:text-3xl font-bold text-slate-800">سبد خرید شما</h1>
     </div>
 
+    {% if messages %}
+        <div class="mb-6 flex flex-col gap-2">
+            {% for message in messages %}
+                <div class="p-4 rounded-2xl text-sm font-bold border
+                    {% if message.tags == 'warning' %}bg-amber-50 text-amber-700 border-amber-200
+                    {% elif message.tags == 'error' %}bg-red-50 text-red-700 border-red-200
+                    {% else %}bg-emerald-50 text-emerald-700 border-emerald-200{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if cart|length > 0 %}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
@@ -46,9 +59,18 @@
 
                         <div class="col-span-2 flex items-center justify-between md:justify-center mt-2 md:mt-0">
                             <span class="md:hidden text-sm font-bold text-gray-500">تعداد:</span>
-                            <span class="bg-gray-100 text-slate-700 px-4 py-2 rounded-xl font-bold border border-gray-200">
-                                {{ item.quantity }}
-                            </span>
+                            <form action="{% url 'cart_update' size_id=item.size.id %}" method="post" class="inline-flex items-center border border-gray-200 rounded-xl bg-slate-50 overflow-hidden">
+                                {% csrf_token %}
+                                <button type="submit" name="action" value="increase" class="px-3 py-1.5 text-slate-700 hover:bg-blue-600 hover:text-white font-bold transition">
+                                    +
+                                </button>
+                                <span class="px-3 py-1.5 font-bold text-slate-800 text-sm bg-white min-w-[2.25rem] text-center">
+                                    {{ item.quantity }}
+                                </span>
+                                <button type="submit" name="action" value="decrease" class="px-3 py-1.5 text-slate-700 hover:bg-red-500 hover:text-white font-bold transition">
+                                    -
+                                </button>
+                            </form>
                         </div>
 
                         <div class="col-span-3 flex items-center justify-between md:justify-center mt-2 md:mt-0">
@@ -71,7 +93,7 @@
 
             <!-- خلاصه سفارش (بخش چپ) -->
             <div class="lg:col-span-1">
-                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm sticky top-28">
+                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm lg:sticky lg:top-28">
                     <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-gray-100 pb-4">خلاصه سفارش</h3>
                     
                     <!-- فرم اعمال کد تخفیف -->

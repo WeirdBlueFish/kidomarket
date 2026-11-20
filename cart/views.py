@@ -1,7 +1,9 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from products.models import Products, ProductSize
+from django.views.decorators.http import require_POST
 from .cart import Cart
 from coupens.forms import CouponApplyForm # ایمپورت فرم
+from django.contrib import messages
 
 # Create your views here.
 
@@ -33,3 +35,23 @@ def cart_detail(request):
         'cart': cart,
         'coupon_apply_form': coupon_apply_form
     })
+
+@require_POST
+def cart_update(request, size_id):
+    cart = Cart(request)
+    size = get_object_or_404(ProductSize, id=size_id)
+    action = request.POST.get('action')
+    current_qty = cart.cart.get(str(size_id), {}).get('quantity', 0)
+
+    if action == 'increase':
+        if current_qty + 1 <= size.stock:
+            cart.add(product=size.product, size=size, quantity=current_qty + 1, override_quantity=True)
+        else:
+            messages.warning(request, f'حداکثر موجودی سایز {size.name} برابر {size.stock} عدد است.')
+    elif action == 'decrease':
+        if current_qty - 1 > 0:
+            cart.add(product=size.product, size=size, quantity=current_qty - 1, override_quantity=True)
+        else:
+            cart.remove(size_id)
+
+    return redirect('cart_detail')

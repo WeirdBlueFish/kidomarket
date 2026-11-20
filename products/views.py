@@ -2,6 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from .models import Products, Category, Comment
 from django.db.models import Avg 
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+from django.shortcuts import redirect, get_object_or_404
+from .models import ProductSize, StockNotification
+
 # Create your views here.
 
 def product_list(request):
@@ -80,3 +85,20 @@ def product_detail(request, pk):
                        'comments_count': comments_count,
                        'children': children,
                     })
+
+@require_POST
+def notify_stock(request):
+    size_id = request.POST.get('size_id')
+    phone = request.POST.get('phone', '').strip()
+    size = get_object_or_404(ProductSize, id=size_id)
+
+    if phone:
+        StockNotification.objects.get_or_create(
+            size=size,
+            phone=phone,
+            notified=False,
+            defaults={'user': request.user if request.user.is_authenticated else None}
+        )
+        messages.success(request, 'شماره شما ثبت شد. به محض موجود شدن این سایز خبرتان می‌کنیم!')
+
+    return redirect(request.META.get('HTTP_REFERER', 'product_list'))

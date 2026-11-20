@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Products, Category, ProductSize, Comment, ProductImage
+from .models import StockNotification
 
 # Register your models here.
 class ProductSizeInline(admin.TabularInline):
@@ -33,3 +34,5 @@ class CommentAdmin(admin.ModelAdmin):
     def approve_comments(self, request, queryset):
         queryset.update(is_active=True)
     approve_comments.short_description = "تایید نظرات انتخاب شده"
+
+admin.site.register(StockNotification)

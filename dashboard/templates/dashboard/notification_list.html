@@ -1,0 +1,61 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+<div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4 border-b border-gray-100 pb-4">
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">درخواست‌های موجودی (خبرم کن)</h2>
+        <p class="text-gray-500 mt-1 text-sm font-bold">مشتریانی که منتظر شارژ مجدد سایزهای ناموجود هستند</p>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-right whitespace-nowrap">
+            <thead class="bg-slate-50 text-slate-600 border-b border-gray-200">
+                <tr>
+                    <th class="p-4 font-bold text-sm">محصول و سایز</th>
+                    <th class="p-4 font-bold text-sm">شماره تماس مشتری</th>
+                    <th class="p-4 font-bold text-sm">تاریخ ثبت</th>
+                    <th class="p-4 font-bold text-sm text-center">وضعیت</th>
+                    <th class="p-4 font-bold text-sm text-center">عملیات</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for item in notifications %}
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="p-4">
+                            <strong class="text-slate-800 block">{{ item.size.product.name }}</strong>
+                            <span class="text-xs text-blue-600 font-bold">سایز: {{ item.size.name }} (موجودی فعلی: {{ item.size.stock }})</span>
+                        </td>
+                        <td class="p-4 font-bold text-slate-700" dir="ltr">
+                            <a href="tel:{{ item.phone }}" class="hover:text-blue-600">{{ item.phone }}</a>
+                        </td>
+                        <td class="p-4 text-gray-500 text-sm" dir="ltr">{{ item.created_at|date:"Y-m-d H:i" }}</td>
+                        <td class="p-4 text-center">
+                            {% if item.notified %}
+                                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">اطلاع‌رسانی شد</span>
+                            {% else %}
+                                <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">در انتظار خبر</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 text-center">
+                            <a href="{% url 'dashboard_notification_toggle' item.id %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition
+                                {% if item.notified %}bg-slate-100 text-slate-600 hover:bg-slate-200{% else %}bg-emerald-500 text-white hover:bg-emerald-600{% endif %}">
+                                {% if item.notified %}
+                                    <i class="fa-solid fa-rotate-left"></i> بازگشت به انتظار
+                                {% else %}
+                                    <i class="fa-solid fa-check"></i> خبر دادم
+                                {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-8 text-center text-gray-500 font-bold">هنوز هیچ درخواستی ثبت نشده است.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

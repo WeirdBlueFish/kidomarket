@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
+from products.models import StockNotification
 from orders.models import Order, OrderItem
 from products.models import Products, ProductImage, ProductSize
 from django.contrib.auth.models import User
@@ -284,3 +285,16 @@ def dashboard_coupon_delete(request, coupon_id):
         coupon.delete()
         return redirect('dashboard_coupon_list')
     return render(request, 'dashboard/coupon_confirm_delete.html', {'coupon': coupon})
+
+
+@staff_member_required
+def dashboard_notification_list(request):
+    notifications = StockNotification.objects.select_related('size', 'size__product').order_by('notified', '-created_at')
+    return render(request, 'dashboard/notification_list.html', {'notifications': notifications})
+
+@staff_member_required
+def dashboard_notification_toggle(request, pk):
+    notif = get_object_or_404(StockNotification, id=pk)
+    notif.notified = not notif.notified
+    notif.save()
+    return redirect('dashboard_notification_list')
