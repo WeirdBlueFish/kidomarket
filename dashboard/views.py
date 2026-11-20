@@ -125,8 +125,8 @@ def dashboard_order_list(request):
 
 
 @staff_member_required
-def dashboard_order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+def dashboard_order_detail(request, pk):
+    order = get_object_or_404(Order, id=pk)
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
@@ -134,7 +134,7 @@ def dashboard_order_detail(request, order_id):
         if new_status in valid_statuses:
             order.status = new_status
             order.save()
-        return redirect('dashboard_order_detail', order_id=order.id)
+        return redirect('dashboard_order_detail', pk=order.id)
 
     return render(request, 'dashboard/order_detail.html', {'order': order})
 
