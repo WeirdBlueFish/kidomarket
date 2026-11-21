@@ -24,6 +24,34 @@
         </div>
     </div>
 
+    <!-- نوار فیلتر هوشمند تک‌کلیکی بر اساس فرزندان کاربر -->
+    {% if user.is_authenticated and user_children %}
+        <div class="bg-blue-50/70 border border-blue-100 rounded-2xl p-4 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-sm font-bold text-slate-700 ml-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-blue-500 ml-1"></i> خرید هوشمند برای:
+                </span>
+                {% for child in user_children %}
+                    <a href="?child={{ child.id }}"
+                       class="px-4 py-1.5 rounded-xl text-sm font-bold transition border
+                       {% if selected_child and selected_child.id == child.id %}
+                           bg-blue-600 text-white border-blue-600 shadow-sm
+                       {% else %}
+                           bg-white text-slate-700 border-gray-200 hover:border-blue-400 hover:text-blue-600
+                       {% endif %}">
+                        {{ child.name }} ({{ child.get_age }} سال)
+                    </a>
+                {% endfor %}
+            </div>
+
+            {% if selected_child %}
+                <a href="{% url 'product_list' %}" class="text-xs font-bold text-red-500 hover:text-red-700 whitespace-nowrap">
+                    ✕ حذف فیلتر {{ selected_child.name }}
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+    
     <!-- گرید کارت‌های محصول -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {% for product in products %}
