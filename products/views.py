@@ -124,7 +124,6 @@ def notify_stock(request):
         )
         if created:
             notify_stock_request(size, phone)
-            
         messages.success(request, 'شماره شما ثبت شد. به محض موجود شدن این سایز خبرتان می‌کنیم!')
 
     return redirect(request.META.get('HTTP_REFERER', 'product_list'))

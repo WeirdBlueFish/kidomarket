@@ -92,7 +92,7 @@ def post_product_to_channel(product):
     sizes_text = "، ".join(available_sizes) if available_sizes else "مشاهده در سایت"
 
     # لینک صفحه محصول
-    product_url = f"{settings.SITE_URL}/products/{product.id}/"
+    product_url = f"{settings.SITE_URL}/products/{product.id}"
 
     # خلاصه توضیحات (حداکثر ۱۸۰ کاراکتر برای خوانایی در کانال)
     short_desc = (product.description[:180] + '...') if len(product.description) > 180 else product.description
