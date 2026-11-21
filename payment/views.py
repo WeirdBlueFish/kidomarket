@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from orders.models import Order
+from core.telegram_utils import notify_new_order, notify_low_stock
 
 def payment_process(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -19,7 +20,11 @@ def payment_process(request, order_id):
 
                     if size_in_db.stock <= 0:
                         size_in_db.stock = 0
+                        notify_low_stock(size_in_db)
                     size_in_db.save()
+
+            # ارسال فاکتور سفارش به ربات مدیریت تلگرام
+            notify_new_order(order)
                     
             # -------------------------
 

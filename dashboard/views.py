@@ -14,6 +14,7 @@ from coupens.models import Coupon
 from coupens.forms import CouponAdminForm
 from django.contrib import messages
 from orders.models import ShippingSetting
+from core.telegram_utils import post_product_to_channel
 
 @staff_member_required
 def dashboard_home(request):
@@ -251,6 +252,9 @@ def dashboard_product_create(request):
                     max_height=size_max_heights[i] if size_max_heights[i].strip() else None,
                     features=size_features[i] if i < len(size_features) and size_features[i].strip() else None
                 )
+        # انتشار خودکار محصول در کانال تلگرام
+        if request.POST.get('post_to_telegram') == 'on':
+            post_product_to_channel(product)
             
         return redirect('dashboard_product_list')
         

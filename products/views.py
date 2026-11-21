@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from .models import ProductSize, StockNotification
+from core.telegram_utils import notify_stock_request
 
 # Create your views here.
 
@@ -115,12 +116,15 @@ def notify_stock(request):
     size = get_object_or_404(ProductSize, id=size_id)
 
     if phone:
-        StockNotification.objects.get_or_create(
+        _, created = StockNotification.objects.get_or_create(
             size=size,
             phone=phone,
             notified=False,
             defaults={'user': request.user if request.user.is_authenticated else None}
         )
+        if created:
+            notify_stock_request(size, phone)
+            
         messages.success(request, 'شماره شما ثبت شد. به محض موجود شدن این سایز خبرتان می‌کنیم!')
 
     return redirect(request.META.get('HTTP_REFERER', 'product_list'))

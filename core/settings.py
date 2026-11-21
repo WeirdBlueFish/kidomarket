@@ -168,3 +168,8 @@ LOGGING = {
         },
     },
 }
+
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '9158960299:AAHJHgTrc_vkt6PqhS4dN1P3NkWINICb23M')
+TELEGRAM_ADMIN_CHAT_ID = os.environ.get('TELEGRAM_ADMIN_CHAT_ID', '1471221853')
+TELEGRAM_CHANNEL_ID = os.environ.get('TELEGRAM_CHANNEL_ID', '@KidoMarkett')
+SITE_URL = os.environ.get('SITE_URL', 'https://kidomarket.onrender.com')
