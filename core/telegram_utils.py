@@ -102,7 +102,7 @@ def post_product_to_channel(product):
         f"🏷 دسته‌بندی: {product.get_gender_display()}\n"
         f"👶 رده سنی: {product.min_age} تا {product.max_age} سال\n"
         f"📏 سایزهای موجود: {sizes_text}\n"
-        f"💳 قیمت: <b>{product.price:,} تومان</b>\n\n"
+        f"💳 قیمت: <b>{int(product.price):,} تومان</b>\n\n"
         f"📝 {short_desc}\n\n"
         f"👇 برای دیدن عکس‌های بیشتر و ثبت سفارش کلیک کنید:"
     )

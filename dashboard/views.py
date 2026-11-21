@@ -220,7 +220,7 @@ def dashboard_product_create(request):
         # ۱. ذخیره محصول اصلی
         product = Products.objects.create(
             name=request.POST.get('name'),
-            price=request.POST.get('price'),
+            price=int(request.POST.get('price') or 0),
             description=request.POST.get('description'),
             min_age=request.POST.get('min_age') or 0,
             max_age=request.POST.get('max_age') or 0,
@@ -255,7 +255,7 @@ def dashboard_product_create(request):
         # انتشار خودکار محصول در کانال تلگرام
         if request.POST.get('post_to_telegram') == 'on':
             post_product_to_channel(product)
-            
+
         return redirect('dashboard_product_list')
         
     return render(request, 'dashboard/product_create.html')
