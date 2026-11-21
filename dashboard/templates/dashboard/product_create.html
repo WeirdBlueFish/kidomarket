@@ -31,7 +31,7 @@
                 <select name="gender" class="w-full p-3.5 rounded-xl border border-gray-300 focus:border-blue-500 outline-none bg-slate-50 transition font-sans">
                     <option value="girl">دخترانه</option>
                     <option value="boy">پسرانه</option>
-                    <option value="sport">اسپرت (مشترک)</option>
+                    <option value="unisex">اسپرت (مشترک)</option>
                 </select>
             </div>
             
@@ -115,6 +115,15 @@
                 container.appendChild(newRow);
             });
         </script>
+        <!-- گزینه انتشار خودکار در کانال تلگرام -->
+        <div class="bg-sky-50 border border-sky-200 p-4 rounded-xl flex items-center gap-3">
+            <input type="checkbox" name="post_to_telegram" id="post_to_telegram" checked
+                   class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+            <label for="post_to_telegram" class="text-sm font-bold text-slate-700 cursor-pointer select-none">
+                <i class="fa-brands fa-telegram text-sky-500 ml-1 text-base"></i>
+                انتشار خودکار این محصول در کانال تلگرام پس از ثبت
+            </label>
+        </div>
         <div class="mt-4 flex justify-end">
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl transition flex items-center gap-2">
                 <i class="fa-solid fa-plus"></i> ثبت محصول
